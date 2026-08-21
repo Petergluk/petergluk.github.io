@@ -1,0 +1,264 @@
+---
+import Layout from './Layout.astro';
+
+const { frontmatter, headings = [] } = Astro.props;
+
+const formattedDate = frontmatter.date
+	? new Date(frontmatter.date).toLocaleDateString('ru-RU', {
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric',
+		})
+	: null;
+
+// Оглавление собираем только из h2, и только если явно включено во frontmatter
+const tocItems = (headings as { depth: number; text: string; slug: string }[]).filter(
+	(h) => h.depth === 2
+);
+const showToc = Boolean(frontmatter.toc) && tocItems.length >= 2;
+---
+
+<Layout title={frontmatter.title} description={frontmatter.description}>
+	<main id="content">
+		<section class="page-hero">
+			<div class="wrap-narrow">
+				<span class="eyebrow">Текст</span>
+				<h1>{frontmatter.title}</h1>
+				<p class="article-meta">
+					{formattedDate && <span class="article-date">{formattedDate}</span>}
+					{
+						(frontmatter.tags ?? []).map((tag: string) => (
+							<span class="tag">{tag}</span>
+						))
+					}
+				</p>
+			</div>
+		</section>
+
+		<section class="band">
+			<div class={showToc ? "wrap article-layout" : "wrap-narrow"}>
+				{
+					showToc && (
+						<nav class="toc" aria-label="Содержание">
+							<p class="toc-label">Содержание</p>
+							<ul>
+								{tocItems.map((h) => (
+									<li>
+										<a href={`#${h.slug}`} data-toc-link={h.slug}>
+											{h.text}
+										</a>
+									</li>
+								))}
+							</ul>
+						</nav>
+					)
+				}
+				<div class="article-body">
+					<article class="prose">
+						<slot />
+					</article>
+					<p class="back"><a href="/texts/">← Все тексты</a></p>
+				</div>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+{
+	showToc && (
+		<script>
+			const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+			const targets = [...links]
+				.map((link) => document.getElementById(link.dataset.tocLink ?? ''))
+				.filter((el): el is HTMLElement => el !== null);
+
+			if (targets.length) {
+				const setActive = (slug: string) => {
+					links.forEach((l) =>
+						l.classList.toggle('is-active', l.dataset.tocLink === slug)
+					);
+				};
+
+				const observer = new IntersectionObserver(
+					(entries) => {
+						const visible = entries
+							.filter((e) => e.isIntersecting)
+							.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+						if (visible.length) {
+							setActive((visible[0].target as HTMLElement).id);
+						}
+					},
+					{ rootMargin: '-15% 0px -70% 0px' }
+				);
+
+				targets.forEach((t) => observer.observe(t));
+			}
+		</script>
+	)
+}
+
+<style is:global>
+	.article-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin: 0;
+	}
+
+	.article-meta .tag {
+		margin: 0;
+	}
+
+	.article-date {
+		font-size: 0.85rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+		margin-right: 0.3rem;
+	}
+
+	.prose {
+		font-size: 1.08rem;
+		line-height: 1.78;
+	}
+
+	.prose h2 {
+		font-size: 1.6rem;
+		margin: 1.4rem 0 0.8rem;
+	}
+
+	.prose h3 {
+		margin: 1.9rem 0 0.5rem;
+	}
+
+	.prose p {
+		margin: 0 0 1.2rem;
+		color: var(--prose-ink);
+	}
+
+	.prose blockquote {
+		margin: 1.8rem 0;
+		padding: 0.2rem 0 0.2rem 1.4rem;
+		border-left: 3px solid var(--accent);
+		font-family: var(--display);
+		font-size: 1.3rem;
+		line-height: 1.5;
+		color: var(--ink-soft);
+	}
+
+	.prose blockquote p {
+		margin: 0;
+		color: inherit;
+	}
+
+	.prose ul,
+	.prose ol {
+		margin: 0 0 1.2rem;
+		padding-left: 1.3rem;
+	}
+
+	.prose li {
+		margin-bottom: 0.55rem;
+	}
+
+	.prose img {
+		width: 100%;
+		height: auto;
+		border-radius: var(--radius);
+		margin: 1.8rem 0;
+	}
+
+	.prose hr {
+		border: none;
+		border-top: 1px solid var(--line);
+		margin: 2.5rem 0;
+	}
+
+	.back {
+		margin: 2.5rem 0 0;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--line);
+	}
+
+	.back a {
+		text-decoration: none;
+		font-size: 0.95rem;
+	}
+
+	/* ---------- Оглавление ---------- */
+	.article-layout {
+		display: grid;
+		grid-template-columns: 220px minmax(0, var(--narrow));
+		gap: 3rem;
+		align-items: start;
+	}
+
+	.article-body {
+		max-width: var(--narrow);
+	}
+
+	.toc {
+		position: sticky;
+		top: 5rem;
+		align-self: start;
+		border-left: 1px solid var(--line);
+		padding-left: 1rem;
+	}
+
+	.toc-label {
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+		margin: 1.4rem 0 0.8rem;
+	}
+
+	.toc ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.65rem;
+	}
+
+	.toc a {
+		display: block;
+		font-size: 0.88rem;
+		line-height: 1.4;
+		color: var(--ink-soft);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.toc a:hover {
+		color: var(--accent);
+	}
+
+	.toc a.is-active {
+		color: var(--accent);
+		font-weight: 600;
+	}
+
+	@media (max-width: 900px) {
+		.article-layout {
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+		}
+
+		.toc {
+			position: static;
+			border-left: none;
+			border-top: 1px solid var(--line);
+			padding-left: 0;
+			padding-top: 1rem;
+			order: 2;
+		}
+
+		.article-body {
+			order: 1;
+			max-width: none;
+		}
+	}
+</style>

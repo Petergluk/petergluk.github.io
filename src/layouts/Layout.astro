@@ -1,0 +1,1434 @@
+---
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+	title?: string;
+	description?: string;
+	entry?: boolean;
+	frontmatter?: { title?: string; description?: string };
+}
+
+const { title, description, entry = false, frontmatter } = Astro.props;
+const pageTitle = title ?? frontmatter?.title ?? "Пётр Глухов — соматический коуч, телесный практик";
+const pageDescription =
+	description ??
+	frontmatter?.description ??
+	"Соматический метакоучинг онлайн, телесные сессии и массаж очно, мастер-классы и семинары по телесной работе и психосоматике.";
+
+const nav = [
+	{ href: "/", label: "Главная" },
+	{ href: "/sessions/", label: "Сессии" },
+	{ href: "/classes/", label: "Мастер-классы" },
+	{ href: "/texts/", label: "Тексты" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={pageDescription} />
+		<title>{pageTitle}</title>
+		<script is:inline>
+			// Ставим тему до первой отрисовки, чтобы не мигало
+			(() => {
+				const saved = localStorage.getItem('theme');
+				const prefersDark =
+					window.matchMedia &&
+					window.matchMedia('(prefers-color-scheme: dark)').matches;
+				document.documentElement.dataset.theme =
+					saved === 'light' || saved === 'dark' ? saved : prefersDark ? 'dark' : 'light';
+			})();
+		</script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap"
+		/>
+		<ClientRouter />
+	</head>
+	<body>
+		<a class="skip" href="#content">К содержанию</a>
+
+		<header class={entry ? "header-entry" : ""}>
+			<nav>
+				{
+					!entry && (
+						<a href="/" class="brand">
+							<span class="brand-mark">СТ</span>
+							<span class="brand-text">Смысловые&nbsp;Танцы</span>
+						</a>
+					)
+				}
+
+				{
+					!entry && (
+						<div class="links">
+							{nav.map((item) => (
+								<a
+									href={item.href}
+									class={
+										currentPath === item.href ||
+										(item.href !== "/" && currentPath.startsWith(item.href))
+											? "active"
+											: ""
+									}
+								>
+									{item.label}
+								</a>
+							))}
+						</div>
+					)
+				}
+
+				<div class="nav-actions">
+					<button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему">
+						<svg
+							class="icon-sun"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.6"
+							stroke-linecap="round"
+							aria-hidden="true"
+						>
+							<circle cx="12" cy="12" r="4.2"></circle>
+							<path
+								d="M12 3.4v2.1M12 18.5v2.1M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M3.4 12h2.1M18.5 12h2.1M4.9 19.1l1.5-1.5M17.6 6.4l1.5-1.5"
+							></path>
+						</svg>
+						<svg
+							class="icon-moon"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.6"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<path d="M20 14.2A8.2 8.2 0 1 1 9.8 4a6.6 6.6 0 0 0 10.2 10.2Z"></path>
+						</svg>
+					</button>
+
+					<button
+						class="menu-toggle"
+						id="menu-toggle"
+						aria-label="Открыть меню"
+						aria-expanded="false"
+						aria-controls="site-menu"
+					>
+						<span class="menu-bars" aria-hidden="true"></span>
+					</button>
+				</div>
+			</nav>
+		</header>
+
+		<div class="menu-overlay" id="site-menu" hidden>
+			<nav class="menu-panel" aria-label="Основное меню">
+				<ul class="menu-list">
+					{
+						nav.map((item) => (
+							<li>
+								<a href={item.href}>{item.label}</a>
+							</li>
+						))
+					}
+				</ul>
+				<div class="menu-contacts">
+					<a href="https://t.me/Petergluk">Telegram</a>
+					<a href="https://wa.me/qr/RX52QNWK3LNOB1">WhatsApp</a>
+					<a href="https://t.me/danceofsense">Канал</a>
+				</div>
+			</nav>
+		</div>
+
+		<slot />
+
+		<footer class={entry ? "footer-hidden" : ""}>
+			<div class="footer-inner">
+				<div class="footer-col footer-brand">
+					<p class="footer-name">Пётр Глухов</p>
+					<p class="footer-tagline">
+						Соматический коуч и телесный практик. Работаю с сознанием через тело — и с
+						телом через сознание.
+					</p>
+				</div>
+				<div class="footer-col">
+					<p class="footer-label">Связаться</p>
+					<a href="https://t.me/Petergluk">Telegram</a>
+					<a href="https://wa.me/qr/RX52QNWK3LNOB1">WhatsApp</a>
+				</div>
+				<div class="footer-col">
+					<p class="footer-label">Смотреть</p>
+					<a href="https://t.me/danceofsense">Телеграм-канал</a>
+					<a href="https://www.youtube.com/channel/UCAkcsu8N_58xybHc_KgyrBA">YouTube</a>
+					<a href="https://photos.app.goo.gl/kVSBV58ioTUoUSCNA">Отзывы</a>
+				</div>
+			</div>
+			<div class="footer-base">
+				<span>© {new Date().getFullYear()} Пётр Глухов · Смысловые Танцы</span>
+			</div>
+		</footer>
+
+		<script>
+			import Lenis from 'lenis';
+
+			// --- Плавная инерционная прокрутка ---
+			const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+			if (!reduceMotion) {
+				const lenis = new Lenis({
+					duration: 1.1,
+					smoothWheel: true,
+				});
+
+				function raf(time: number) {
+					lenis.raf(time);
+					requestAnimationFrame(raf);
+				}
+				requestAnimationFrame(raf);
+
+				// Якоря (оглавление, "к содержанию" и т.п.) едут через Lenis
+				document.addEventListener('click', (e) => {
+					const link = (e.target as HTMLElement).closest('a[href^="#"]');
+					if (!link) return;
+					const id = link.getAttribute('href')?.slice(1);
+					const target = id ? document.getElementById(id) : null;
+					if (target) {
+						e.preventDefault();
+						lenis.scrollTo(target, { offset: -80 });
+					}
+				});
+			}
+
+			// --- Плавное появление блоков при скролле ---
+			const revealTargets = document.querySelectorAll(
+				'.card, .prose > *, .toc'
+			);
+
+			if (revealTargets.length && !reduceMotion) {
+				revealTargets.forEach((el) => el.classList.add('reveal'));
+
+				const revealObserver = new IntersectionObserver(
+					(entries) => {
+						entries.forEach((entry) => {
+							if (entry.isIntersecting) {
+								entry.target.classList.add('is-revealed');
+								revealObserver.unobserve(entry.target);
+							}
+						});
+					},
+					{ rootMargin: '0px 0px -5% 0px', threshold: 0.05 }
+				);
+
+				revealTargets.forEach((el) => revealObserver.observe(el));
+			}
+
+			// --- Переключение темы с расходящимся кругом ---
+			const themeToggle = document.getElementById('theme-toggle');
+
+			if (themeToggle) {
+				const root = document.documentElement;
+
+				const apply = (next: string) => {
+					root.dataset.theme = next;
+					localStorage.setItem('theme', next);
+				};
+
+				themeToggle.addEventListener('click', (event) => {
+					const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+
+					const reduceMotion = window.matchMedia(
+						'(prefers-reduced-motion: reduce)'
+					).matches;
+
+					// @ts-expect-error — startViewTransition есть не во всех браузерах
+					if (reduceMotion || !document.startViewTransition) {
+						apply(next);
+						return;
+					}
+
+					// Круг расходится из центра кнопки
+					const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+					const x = ((rect.left + rect.width / 2) / window.innerWidth) * 100;
+					const y = ((rect.top + rect.height / 2) / window.innerHeight) * 100;
+					root.style.setProperty('--reveal-x', `${x}%`);
+					root.style.setProperty('--reveal-y', `${y}%`);
+
+					// В светлую тему круг сходится обратно
+					root.classList.toggle('reveal-back', next === 'light');
+
+					// @ts-expect-error — см. выше
+					document.startViewTransition(() => apply(next));
+				});
+			}
+
+			// --- Меню ---
+			const toggle = document.getElementById('menu-toggle');
+			const menu = document.getElementById('site-menu');
+
+			if (toggle && menu) {
+				const setOpen = (open: boolean) => {
+					toggle.setAttribute('aria-expanded', String(open));
+					toggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+					toggle.classList.toggle('is-open', open);
+					document.body.classList.toggle('menu-open', open);
+
+					if (open) {
+						menu.hidden = false;
+						requestAnimationFrame(() => menu.classList.add('is-visible'));
+					} else {
+						menu.classList.remove('is-visible');
+						setTimeout(() => {
+							if (toggle.getAttribute('aria-expanded') === 'false') menu.hidden = true;
+						}, 300);
+					}
+				};
+
+				toggle.addEventListener('click', () => {
+					setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+				});
+
+				menu.addEventListener('click', (event) => {
+					if (event.target === menu || (event.target as HTMLElement).tagName === 'A') {
+						setOpen(false);
+					}
+				});
+
+				document.addEventListener('keydown', (event) => {
+					if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+						setOpen(false);
+					}
+				});
+			}
+
+			// --- Восстановление темы после переходов между страницами ---
+			document.addEventListener('astro:after-swap', () => {
+				const saved = localStorage.getItem('theme');
+				if (saved === 'light' || saved === 'dark') {
+					document.documentElement.dataset.theme = saved;
+				}
+			});
+		</script>
+	</body>
+</html>
+
+<style is:global>
+	:root {
+		/* Размеры и шрифты — общие для обеих тем */
+		--max: 1080px;
+		--narrow: 720px;
+		--radius: 14px;
+		--display: 'Cormorant Garamond', Georgia, serif;
+		--body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+		/* Палитра входной страницы: всегда тёмная, независимо от темы сайта */
+		--entry-bg: #0a0a0a;
+		--entry-ink: #f5f4f2;
+		--entry-ink-dim: rgba(245, 244, 242, 0.5);
+		--entry-ink-soft: rgba(245, 244, 242, 0.65);
+		--entry-accent: #e8946a;
+		--entry-line: rgba(245, 244, 242, 0.18);
+		--entry-card: rgba(245, 244, 242, 0.06);
+	}
+
+	/* ---------- Дневная тема ---------- */
+	:root,
+	:root[data-theme='light'] {
+		--ink: #241f1b;
+		--ink-soft: #6b6259;
+		--ink-faint: #796f62;
+		--paper: #faf6f0;
+		--paper-warm: #f3ece2;
+		--card: #ffffff;
+		--accent: #b4552d;
+		--accent-deep: #8f4020;
+		--accent-soft: #f6e6dc;
+		--line: #e6ddd1;
+		--on-accent: #ffffff;
+
+		--header-bg: rgba(250, 246, 240, 0.85);
+		--overlay-bg: rgba(250, 246, 240, 0.97);
+		--hero-glow: #e9dfd2;
+		--glow-warm: #f6e6dc;
+		--glow-cool: #e9dfd2;
+		--card-hover-line: #d9c9b6;
+		--prose-ink: #3a332d;
+
+		/* Контрастная полоса и подвал */
+		--deep-bg: #2a2420;
+		--deep-ink: #f2ece4;
+		--deep-ink-soft: #b9afa4;
+		--deep-heading: #ffffff;
+		--deep-line: rgba(232, 224, 214, 0.12);
+		--deep-faint: #857b71;
+
+		--shadow: 0 1px 2px rgba(36, 31, 27, 0.04), 0 8px 24px -12px rgba(36, 31, 27, 0.14);
+		--shadow-lift: 0 2px 4px rgba(36, 31, 27, 0.05), 0 18px 40px -16px rgba(36, 31, 27, 0.2);
+		--btn-glow: rgba(143, 64, 32, 0.6);
+	}
+
+	/* ---------- Ночная тема: тёмно-синий + коричнево-оранжевый ---------- */
+	:root[data-theme='dark'] {
+		--ink: #e8e6e3;
+		--ink-soft: #a9b0bb;
+		--ink-faint: #828a96;
+		--paper: #161d29;
+		--paper-warm: #1c2532;
+		--card: #212b39;
+		--accent: #d97845;
+		--accent-deep: #e98d58;
+		--accent-soft: #33302f;
+		--line: #2e3947;
+		--on-accent: #1a1206;
+
+		--header-bg: rgba(22, 29, 41, 0.85);
+		--overlay-bg: rgba(22, 29, 41, 0.97);
+		--hero-glow: #23303f;
+		--glow-warm: #33261f;
+		--glow-cool: #1e2a3a;
+		--card-hover-line: #3d4b5c;
+		--prose-ink: #d7d4d0;
+
+		--deep-bg: #0f151e;
+		--deep-ink: #d8d5d1;
+		--deep-ink-soft: #8d949f;
+		--deep-heading: #f2f0ed;
+		--deep-line: rgba(216, 213, 209, 0.12);
+		--deep-faint: #6b727d;
+
+		--shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+		--shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.25), 0 18px 40px -16px rgba(0, 0, 0, 0.6);
+		--btn-glow: rgba(217, 120, 69, 0.45);
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	html {
+		scroll-behavior: smooth;
+	}
+
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+	}
+
+	body {
+		background: var(--paper);
+		color: var(--ink);
+		font-family: var(--body);
+		font-size: 17px;
+		line-height: 1.7;
+		-webkit-font-smoothing: antialiased;
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+	}
+
+	.skip {
+		position: absolute;
+		left: -9999px;
+	}
+
+	.skip:focus {
+		left: 1rem;
+		top: 1rem;
+		z-index: 10;
+		background: var(--card);
+		padding: 0.6rem 1rem;
+		border-radius: 8px;
+	}
+
+	main {
+		flex: 1;
+		width: 100%;
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: var(--display);
+		line-height: 1.15;
+		font-weight: 500;
+		letter-spacing: -0.01em;
+	}
+
+	h1 {
+		font-size: clamp(2.4rem, 6vw, 3.6rem);
+		margin: 0 0 1.1rem;
+	}
+
+	h2 {
+		font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+		margin: 0 0 0.9rem;
+	}
+
+	h3 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin: 0 0 0.5rem;
+	}
+
+	p {
+		margin: 0 0 1rem;
+	}
+
+	a {
+		color: var(--accent);
+		text-underline-offset: 3px;
+	}
+
+	/* ---------- Шапка ---------- */
+	header {
+		position: sticky;
+		top: 0;
+		z-index: 5;
+		background: var(--header-bg);
+		backdrop-filter: saturate(150%) blur(12px);
+		border-bottom: 1px solid var(--line);
+	}
+
+	nav {
+		max-width: var(--max);
+		margin: 0 auto;
+		padding: 0.85rem 1.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	nav .brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		text-decoration: none;
+		color: var(--ink);
+	}
+
+	.brand-mark {
+		width: 34px;
+		height: 34px;
+		flex: none;
+		display: grid;
+		place-items: center;
+		border-radius: 50%;
+		background: var(--accent);
+		color: var(--on-accent);
+		font-family: var(--display);
+		font-size: 0.95rem;
+		letter-spacing: 0.02em;
+	}
+
+	.brand-text {
+		font-family: var(--display);
+		font-size: 1.15rem;
+		font-weight: 600;
+	}
+
+	nav .links {
+		display: flex;
+		gap: 1.4rem;
+		flex-wrap: wrap;
+	}
+
+	nav .links a {
+		position: relative;
+		text-decoration: none;
+		color: var(--ink-soft);
+		font-size: 0.92rem;
+		padding: 0.2rem 0;
+		transition: color 0.2s;
+	}
+
+	nav .links a::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: -2px;
+		height: 1.5px;
+		background: var(--accent);
+		transform: scaleX(0);
+		transition: transform 0.25s ease;
+	}
+
+	nav .links a:hover,
+	nav .links a.active {
+		color: var(--accent);
+	}
+
+	nav .links a.active::after,
+	nav .links a:hover::after {
+		transform: scaleX(1);
+	}
+
+	/* ---------- Шапка на входной странице: кнопки уходят в угол, почти незаметны ---------- */
+	.header-entry {
+		position: fixed;
+		background: transparent;
+		backdrop-filter: none;
+		border-bottom: none;
+	}
+
+	.header-entry nav {
+		justify-content: flex-end;
+		padding: 1.1rem 1.3rem;
+	}
+
+	/* ---------- Переключатель темы ---------- */
+	.nav-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+	}
+
+	.theme-toggle {
+		width: 40px;
+		height: 40px;
+		flex: none;
+		display: grid;
+		place-items: center;
+		padding: 0;
+		border: 1px solid var(--line);
+		border-radius: 50%;
+		background: var(--card);
+		color: var(--ink-soft);
+		cursor: pointer;
+		transition:
+			color 0.2s ease,
+			border-color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.theme-toggle:hover {
+		color: var(--accent);
+		border-color: var(--accent);
+		transform: scale(1.05);
+	}
+
+	/* На входной странице кнопки почти невидимы, пока на них не наводишь */
+	.header-entry .theme-toggle,
+	.header-entry .menu-toggle {
+		border-color: transparent;
+		background: transparent;
+		opacity: 0.55;
+	}
+
+	.header-entry .theme-toggle:hover,
+	.header-entry .menu-toggle:hover {
+		opacity: 1;
+		border-color: var(--entry-line);
+		background: var(--entry-card);
+	}
+
+	.header-entry .theme-toggle {
+		color: var(--entry-ink-soft);
+	}
+
+	.header-entry .menu-bars,
+	.header-entry .menu-bars::before,
+	.header-entry .menu-bars::after {
+		background: var(--entry-ink-soft);
+	}
+
+	.theme-toggle svg {
+		width: 19px;
+		height: 19px;
+		grid-area: 1 / 1;
+		transition:
+			opacity 0.25s ease,
+			transform 0.35s ease;
+	}
+
+	.icon-moon {
+		opacity: 0;
+		transform: rotate(-40deg) scale(0.7);
+	}
+
+	:root[data-theme='dark'] .icon-sun {
+		opacity: 0;
+		transform: rotate(40deg) scale(0.7);
+	}
+
+	:root[data-theme='dark'] .icon-moon {
+		opacity: 1;
+		transform: rotate(0) scale(1);
+	}
+
+	/* Расходящийся круг при смене темы */
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none;
+		mix-blend-mode: normal;
+	}
+
+	::view-transition-old(root) {
+		z-index: 1;
+	}
+
+	::view-transition-new(root) {
+		z-index: 2;
+		animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	html.reveal-back::view-transition-old(root) {
+		z-index: 2;
+		animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1) reverse;
+	}
+
+	html.reveal-back::view-transition-new(root) {
+		z-index: 1;
+		animation: none;
+	}
+
+	@keyframes theme-reveal {
+		from {
+			clip-path: circle(0% at var(--reveal-x, 50%) var(--reveal-y, 50%));
+		}
+		to {
+			clip-path: circle(150% at var(--reveal-x, 50%) var(--reveal-y, 50%));
+		}
+	}
+
+	/* ---------- Гамбургер ---------- */
+	.menu-toggle {
+		width: 44px;
+		height: 44px;
+		flex: none;
+		display: none;
+		place-items: center;
+		padding: 0;
+		border: 1px solid var(--line);
+		border-radius: 50%;
+		background: var(--card);
+		cursor: pointer;
+		transition:
+			border-color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.header-entry .menu-toggle {
+		display: grid;
+	}
+
+	.menu-toggle:hover {
+		border-color: var(--accent);
+		transform: scale(1.05);
+	}
+
+	.menu-bars {
+		position: relative;
+	}
+
+	.menu-bars,
+	.menu-bars::before,
+	.menu-bars::after {
+		display: block;
+		width: 18px;
+		height: 1.5px;
+		background: var(--ink);
+		transition:
+			transform 0.28s ease,
+			opacity 0.2s ease;
+	}
+
+	.menu-bars::before,
+	.menu-bars::after {
+		content: '';
+		position: absolute;
+		left: 0;
+	}
+
+	.menu-bars::before {
+		transform: translateY(-6px);
+	}
+
+	.menu-bars::after {
+		transform: translateY(6px);
+	}
+
+	.menu-toggle.is-open .menu-bars {
+		opacity: 0;
+	}
+
+	.menu-toggle.is-open .menu-bars::before {
+		transform: rotate(45deg);
+	}
+
+	.menu-toggle.is-open .menu-bars::after {
+		transform: rotate(-45deg);
+	}
+
+	/* ---------- Оверлей меню ---------- */
+	body.menu-open {
+		overflow: hidden;
+	}
+
+	.menu-overlay[hidden] {
+		display: none;
+	}
+
+	.menu-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 20;
+		display: grid;
+		place-items: center;
+		background: var(--overlay-bg);
+		backdrop-filter: blur(8px);
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	.menu-overlay.is-visible {
+		opacity: 1;
+	}
+
+	.menu-panel {
+		text-align: center;
+		transform: translateY(12px);
+		transition: transform 0.35s ease;
+	}
+
+	.menu-overlay.is-visible .menu-panel {
+		transform: translateY(0);
+	}
+
+	.menu-list {
+		list-style: none;
+		margin: 0 0 2.5rem;
+		padding: 0;
+		display: grid;
+		gap: 0.6rem;
+	}
+
+	.menu-list a {
+		font-family: var(--display);
+		font-size: clamp(2rem, 7vw, 3rem);
+		font-weight: 400;
+		color: var(--ink);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.menu-list a:hover {
+		color: var(--accent);
+	}
+
+	.menu-contacts {
+		display: flex;
+		gap: 1.5rem;
+		justify-content: center;
+		flex-wrap: wrap;
+		font-size: 0.9rem;
+	}
+
+	.menu-contacts a {
+		color: var(--ink-soft);
+		text-decoration: none;
+	}
+
+	.menu-contacts a:hover {
+		color: var(--accent);
+	}
+
+	/* ---------- Контейнеры и секции ---------- */
+	.wrap {
+		width: 100%;
+		max-width: var(--max);
+		margin: 0 auto;
+		padding: 0 1.5rem;
+	}
+
+	.wrap-narrow {
+		width: 100%;
+		max-width: var(--narrow);
+		margin: 0 auto;
+		padding: 0 1.5rem;
+	}
+
+	.band {
+		padding: clamp(3rem, 7vw, 5.5rem) 0;
+	}
+
+	.band-warm {
+		background: var(--paper-warm);
+		border-block: 1px solid var(--line);
+	}
+
+	.band-dark {
+		background: var(--deep-bg);
+		color: var(--deep-ink);
+	}
+
+	.band-dark h2,
+	.band-dark h3 {
+		color: var(--deep-heading);
+	}
+
+	.band-dark .muted {
+		color: var(--deep-ink-soft);
+	}
+
+	.eyebrow {
+		display: block;
+		font-family: var(--body);
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--accent);
+		margin: 0 0 0.9rem;
+	}
+
+	.lede {
+		font-family: var(--display);
+		font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+		line-height: 1.45;
+		color: var(--ink-soft);
+		margin: 0 0 1.3rem;
+	}
+
+	.section-head {
+		max-width: 640px;
+		margin-bottom: 2.2rem;
+	}
+
+	/* ---------- Hero ---------- */
+	.hero {
+		position: relative;
+		overflow: hidden;
+		background:
+			radial-gradient(80% 70% at 15% 0%, var(--glow-warm) 0%, transparent 60%),
+			linear-gradient(180deg, var(--paper) 0%, var(--paper-warm) 100%);
+		border-bottom: 1px solid var(--line);
+	}
+
+	.hero-inner {
+		max-width: var(--max);
+		margin: 0 auto;
+		padding: clamp(3rem, 8vw, 6rem) 1.5rem clamp(3rem, 7vw, 5rem);
+		display: grid;
+		grid-template-columns: 1.1fr 0.9fr;
+		gap: clamp(2rem, 5vw, 4rem);
+		align-items: center;
+	}
+
+	.hero-copy h1 {
+		font-weight: 400;
+	}
+
+	.hero-portrait {
+		position: relative;
+		aspect-ratio: 4 / 5;
+		border-radius: var(--radius);
+		overflow: hidden;
+		background:
+			linear-gradient(150deg, var(--accent-soft), var(--paper-warm) 60%, var(--hero-glow));
+		box-shadow: var(--shadow-lift);
+	}
+
+	.hero-portrait img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.photo-hint {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		text-align: center;
+		padding: 1.5rem;
+		font-size: 0.85rem;
+		color: var(--ink-soft);
+		line-height: 1.5;
+	}
+
+	/* ---------- Заголовочный блок внутренних страниц ---------- */
+	.page-hero {
+		background:
+			radial-gradient(70% 90% at 100% 0%, var(--glow-warm) 0%, transparent 65%),
+			linear-gradient(180deg, var(--paper) 0%, var(--paper-warm) 100%);
+		border-bottom: 1px solid var(--line);
+		padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(2rem, 5vw, 3.5rem);
+	}
+
+	.page-hero .lede {
+		max-width: 40ch;
+	}
+
+	.page-hero h1 {
+		font-size: clamp(2.8rem, 7vw, 4.2rem);
+	}
+
+	/* ---------- Списки ---------- */
+	.checklist {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 1rem;
+	}
+
+	.checklist li {
+		position: relative;
+		padding-left: 1.7rem;
+		color: var(--ink-soft);
+	}
+
+	.checklist li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.62em;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+
+	.checklist strong {
+		color: var(--ink);
+		font-weight: 600;
+	}
+
+	/* ---------- FAQ ---------- */
+	.faq-item + .faq-item {
+		margin-top: 1.2rem;
+	}
+
+	.faq-item h3 {
+		margin-bottom: 0.35rem;
+	}
+
+	.faq-item p {
+		color: var(--ink-soft);
+		margin: 0;
+	}
+
+	/* ---------- Кнопки ---------- */
+	.cta-row {
+		display: flex;
+		gap: 0.8rem;
+		flex-wrap: wrap;
+		margin: 1.6rem 0 0;
+	}
+
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.78rem 1.5rem;
+		border-radius: 999px;
+		text-decoration: none;
+		font-family: var(--body);
+		font-size: 0.95rem;
+		font-weight: 500;
+		background: var(--accent);
+		color: var(--on-accent);
+		border: 1px solid var(--accent);
+		transition:
+			transform 0.2s ease,
+			background 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.btn:hover {
+		background: var(--accent-deep);
+		border-color: var(--accent-deep);
+		transform: translateY(-2px);
+		box-shadow: 0 10px 24px -12px var(--btn-glow);
+	}
+
+	.btn.secondary {
+		background: transparent;
+		color: var(--accent);
+	}
+
+	.btn.secondary:hover {
+		background: var(--accent-soft);
+		color: var(--accent-deep);
+	}
+
+	.band-dark .btn.secondary {
+		color: var(--deep-ink);
+		border-color: color-mix(in srgb, var(--deep-ink) 35%, transparent);
+	}
+
+	.band-dark .btn.secondary:hover {
+		background: color-mix(in srgb, var(--deep-ink) 10%, transparent);
+		color: var(--deep-heading);
+	}
+
+	/* ---------- Карточки ---------- */
+	.grid {
+		display: grid;
+		gap: 1.4rem;
+	}
+
+	.grid-2 {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	/* Карточки сами занимают ряды, одинокая не растягивается на полряда */
+	.grid-auto {
+		grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+	}
+
+	.grid-3 {
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	.grid-4 {
+		grid-template-columns: repeat(4, 1fr);
+	}
+
+	.card {
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		padding: 1.6rem 1.7rem;
+		box-shadow: var(--shadow);
+	}
+
+	.card > :last-child {
+		margin-bottom: 0;
+	}
+
+	a.card {
+		display: block;
+		text-decoration: none;
+		color: inherit;
+		transition:
+			transform 0.22s ease,
+			box-shadow 0.22s ease,
+			border-color 0.22s ease;
+	}
+
+	a.card:hover {
+		transform: translateY(-3px);
+		border-color: var(--card-hover-line);
+		box-shadow: var(--shadow-lift);
+	}
+
+	.card-cover {
+		aspect-ratio: 16 / 10;
+		margin: -1.6rem -1.7rem 1.3rem;
+		border-radius: var(--radius) var(--radius) 0 0;
+		overflow: hidden;
+		background: linear-gradient(140deg, var(--accent-soft), var(--paper-warm));
+	}
+
+	/* ---------- Акварельные заглушки (нет фото — есть разводы) ---------- */
+	.card-cover.watercolor {
+		position: relative;
+		background: var(--paper-warm);
+	}
+
+	.card-cover.watercolor::before,
+	.card-cover.watercolor::after {
+		content: '';
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(18px);
+		opacity: 0.55;
+		mix-blend-mode: multiply;
+	}
+
+	:root[data-theme='dark'] .card-cover.watercolor::before,
+	:root[data-theme='dark'] .card-cover.watercolor::after {
+		mix-blend-mode: screen;
+		opacity: 0.4;
+	}
+
+	.watercolor-1::before {
+		width: 65%;
+		height: 90%;
+		left: -10%;
+		top: -20%;
+		background: var(--accent-soft);
+	}
+	.watercolor-1::after {
+		width: 55%;
+		height: 75%;
+		right: -15%;
+		bottom: -25%;
+		background: #c9d6e4;
+	}
+
+	.watercolor-2::before {
+		width: 70%;
+		height: 70%;
+		right: -15%;
+		top: -15%;
+		background: #e4d3c9;
+	}
+	.watercolor-2::after {
+		width: 50%;
+		height: 90%;
+		left: -10%;
+		bottom: -20%;
+		background: var(--accent-soft);
+	}
+
+	.watercolor-3::before {
+		width: 60%;
+		height: 100%;
+		left: 15%;
+		top: -30%;
+		background: #d8dfc9;
+	}
+	.watercolor-3::after {
+		width: 55%;
+		height: 60%;
+		right: -10%;
+		bottom: -15%;
+		background: #c9d6e4;
+	}
+
+	.card-cover img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.arrow {
+		display: inline-block;
+		color: var(--accent);
+		font-weight: 500;
+		transition: transform 0.2s ease;
+	}
+
+	a.card:hover .arrow {
+		transform: translateX(4px);
+	}
+
+	.muted {
+		color: var(--ink-soft);
+	}
+
+	.tag {
+		display: inline-block;
+		font-family: var(--body);
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		background: var(--accent-soft);
+		color: var(--accent-deep);
+		border-radius: 999px;
+		padding: 0.28rem 0.8rem;
+		margin: 0 0.4rem 0.7rem 0;
+	}
+
+	/* ---------- Подвал ---------- */
+	.footer-hidden {
+		display: none;
+	}
+
+	footer {
+		margin-top: auto;
+		background: var(--deep-bg);
+		color: var(--deep-ink);
+		font-size: 0.92rem;
+	}
+
+	.footer-inner {
+		max-width: var(--max);
+		margin: 0 auto;
+		padding: 3rem 1.5rem 2.2rem;
+		display: grid;
+		grid-template-columns: 1.6fr 1fr 1fr;
+		gap: 2rem;
+	}
+
+	.footer-col {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		align-items: flex-start;
+	}
+
+	.footer-col a {
+		color: var(--deep-ink);
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.footer-col a:hover {
+		color: var(--accent);
+	}
+
+	.footer-name {
+		font-family: var(--display);
+		font-size: 1.3rem;
+		color: var(--deep-heading);
+		margin: 0;
+	}
+
+	.footer-tagline {
+		margin: 0;
+		max-width: 34ch;
+		color: var(--deep-ink-soft);
+	}
+
+	.footer-label {
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--deep-faint);
+		margin: 0 0 0.2rem;
+	}
+
+	.footer-base {
+		border-top: 1px solid var(--deep-line);
+	}
+
+	.footer-base span {
+		display: block;
+		max-width: var(--max);
+		margin: 0 auto;
+		padding: 1.1rem 1.5rem;
+		font-size: 0.82rem;
+		color: var(--deep-faint);
+	}
+
+	/* ---------- Адаптив ---------- */
+	@media (max-width: 900px) {
+		.hero-inner {
+			grid-template-columns: 1fr;
+		}
+
+		.hero-portrait {
+			max-width: 380px;
+			aspect-ratio: 3 / 2;
+		}
+
+		.grid-3,
+		.grid-4 {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.footer-inner {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.footer-brand {
+			grid-column: 1 / -1;
+		}
+	}
+
+	@media (max-width: 620px) {
+		body {
+			font-size: 16px;
+		}
+
+		nav .links {
+			display: none;
+		}
+
+		.menu-toggle {
+			display: grid;
+		}
+
+		.grid-2,
+		.grid-3,
+		.grid-4 {
+			grid-template-columns: 1fr;
+		}
+
+		nav {
+			padding: 0.7rem 1.15rem;
+		}
+
+		nav .links {
+			gap: 1rem;
+		}
+
+		.brand-text {
+			font-size: 1.05rem;
+		}
+
+		.card {
+			padding: 1.35rem 1.35rem;
+		}
+
+		.card-cover {
+			margin: -1.35rem -1.35rem 1.1rem;
+		}
+
+		.footer-inner {
+			grid-template-columns: 1fr;
+			gap: 1.6rem;
+		}
+	}
+
+	/* ---------- Появление блоков при скролле ---------- */
+	.reveal {
+		opacity: 0;
+		transform: translateY(12px);
+		transition:
+			opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.reveal.is-revealed {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		* {
+			transition: none !important;
+			scroll-behavior: auto !important;
+		}
+
+		.reveal {
+			opacity: 1;
+			transform: none;
+		}
+
+		::view-transition-old(root),
+		::view-transition-new(root) {
+			animation: none;
+		}
+	}
+
+	/* ---------- Простые переходы между страницами (fade) ---------- */
+	@keyframes page-fade-in {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
+
+	@keyframes page-fade-out {
+		from { opacity: 1; }
+		to { opacity: 0; }
+	}
+
+	/* Применяем fade только к main, не к header/footer, чтобы тема не ломалась */
+	::view-transition-old(main) {
+		animation: page-fade-out 0.2s ease-out both;
+	}
+
+	::view-transition-new(main) {
+		animation: page-fade-in 0.3s ease-in both;
+	}
+</style>

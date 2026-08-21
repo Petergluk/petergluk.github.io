@@ -1,11 +1,52 @@
-<div align="center">
+# Смысловые танцы — сайт
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Сайт для презентации индивидуальных сессий (соматический коучинг, массаж), мастер-классов и текстов о телесной работе.
 
-  <h1>Built with AI Studio</h2>
+## 📁 Структура файлов
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+```
+src/
+├── layouts/                    ← шаблоны страниц
+│   ├── Layout.astro           ← основной layout (nav, footer, стили)
+│   └── TextLayout.astro       ← layout для статей
+│
+├── pages/                      ← страницы сайта
+│   ├── index.astro            ← главная
+│   ├── sessions.astro         ← индивидуальные сессии
+│   ├── classes.astro          ← мастер-классы
+│   └── texts/
+│       ├── index.astro        ← список статей
+│       ├── massazh-kak-tanec.md       ← статьи (маршрутизируются автоматически)
+│       ├── iz-chego-sostoit-sessiya.md
+│       └── rabota-s-sostoyaniem.md
+│
+└── ...
+```
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## ✍️ Как добавить статью
 
-</div>
+1. Создайте файл в **`src/pages/texts/my-article.md`**
+2. Добавьте frontmatter:
+   ```yaml
+   ---
+   layout: ../../layouts/TextLayout.astro
+   title: "Название статьи"
+   description: "Краткое описание для списка"
+   date: "2026-08-19"
+   ---
+   ```
+3. Напишите контент в markdown
+4. Статья автоматически появится на `/texts/` (список сортируется по дате)
+
+## 🚀 Команды
+
+```bash
+npm run dev       # Запустить dev-сервер на localhost:3000
+npm run build     # Собрать production-версию в dist/
+npm run preview   # Превью собранной версии
+```
+
+## 📝 Важно
+
+- **`dist/`** — папка сборки. HTML там генерируется автоматически при `npm run build`, редактировать её вручную не нужно.
+- Все страницы лежат в `src/pages/`. Контентные страницы (статьи) — это `.md` файлы, страницы с вёрсткой (главная, сессии, классы) — `.astro`.
