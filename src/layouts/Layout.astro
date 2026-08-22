@@ -16,10 +16,10 @@ const pageDescription =
 	"Соматический метакоучинг онлайн, телесные сессии и массаж очно, мастер-классы и семинары по телесной работе и психосоматике.";
 
 const nav = [
-	{ href: "/", label: "Главная" },
 	{ href: "/sessions/", label: "Сессии" },
 	{ href: "/classes/", label: "Мастер-классы" },
 	{ href: "/texts/", label: "Тексты" },
+	{ href: "/contacts/", label: "Контакты" },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -61,9 +61,8 @@ const currentPath = Astro.url.pathname;
 			<nav>
 				{
 					!entry && (
-						<a href="/" class="brand">
-							<span class="brand-mark">СТ</span>
-							<span class="brand-text">Смысловые&nbsp;Танцы</span>
+						<a href="/" class="brand" aria-label="На главную">
+							<span class="brand-mark">PG</span>
 						</a>
 					)
 				}
@@ -132,6 +131,12 @@ const currentPath = Astro.url.pathname;
 		</header>
 
 		<div class="menu-overlay" id="site-menu" hidden>
+			<button class="menu-close" id="menu-close" aria-label="Закрыть меню">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="18" y1="6" x2="6" y2="18"></line>
+					<line x1="6" y1="6" x2="18" y2="18"></line>
+				</svg>
+			</button>
 			<nav class="menu-panel" aria-label="Основное меню">
 				<ul class="menu-list">
 					{
@@ -142,11 +147,6 @@ const currentPath = Astro.url.pathname;
 						))
 					}
 				</ul>
-				<div class="menu-contacts">
-					<a href="https://t.me/Petergluk">Telegram</a>
-					<a href="https://wa.me/qr/RX52QNWK3LNOB1">WhatsApp</a>
-					<a href="https://t.me/danceofsense">Канал</a>
-				</div>
 			</nav>
 		</div>
 
@@ -164,7 +164,7 @@ const currentPath = Astro.url.pathname;
 				<div class="footer-col">
 					<p class="footer-label">Связаться</p>
 					<a href="https://t.me/Petergluk">Telegram</a>
-					<a href="https://wa.me/qr/RX52QNWK3LNOB1">WhatsApp</a>
+					<a href="/contacts/">Контакты</a>
 				</div>
 				<div class="footer-col">
 					<p class="footer-label">Смотреть</p>
@@ -174,141 +174,163 @@ const currentPath = Astro.url.pathname;
 				</div>
 			</div>
 			<div class="footer-base">
-				<span>© {new Date().getFullYear()} Пётр Глухов · Смысловые Танцы</span>
+				<span>© {new Date().getFullYear()} Пётр Глухов</span>
 			</div>
 		</footer>
 
 		<script>
 			import Lenis from 'lenis';
 
-			// --- Плавная инерционная прокрутка ---
-			const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			let lenisInstance: Lenis | null = null;
+			let isKeydownAttached = false;
 
-			if (!reduceMotion) {
-				const lenis = new Lenis({
-					duration: 1.1,
-					smoothWheel: true,
-				});
+			function init() {
+				// --- Плавная инерционная прокрутка ---
+				const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-				function raf(time: number) {
-					lenis.raf(time);
+				if (!reduceMotion && !lenisInstance) {
+					lenisInstance = new Lenis({
+						duration: 1.1,
+						smoothWheel: true,
+					});
+
+					function raf(time: number) {
+						lenisInstance?.raf(time);
+						requestAnimationFrame(raf);
+					}
 					requestAnimationFrame(raf);
 				}
-				requestAnimationFrame(raf);
 
-				// Якоря (оглавление, "к содержанию" и т.п.) едут через Lenis
-				document.addEventListener('click', (e) => {
-					const link = (e.target as HTMLElement).closest('a[href^="#"]');
-					if (!link) return;
-					const id = link.getAttribute('href')?.slice(1);
-					const target = id ? document.getElementById(id) : null;
-					if (target) {
-						e.preventDefault();
-						lenis.scrollTo(target, { offset: -80 });
-					}
-				});
-			}
+				// Обработка якорей через делегирование (можно вешать каждый раз, так как document не меняется,
+				// но лучше повесить один раз)
+				if (!window.hasOwnProperty('lenisAnchorsAttached') && !reduceMotion) {
+					Object.defineProperty(window, 'lenisAnchorsAttached', { value: true });
+					document.addEventListener('click', (e) => {
+						const link = (e.target as HTMLElement).closest('a[href^="#"]');
+						if (!link) return;
+						const id = link.getAttribute('href')?.slice(1);
+						const target = id ? document.getElementById(id) : null;
+						if (target && lenisInstance) {
+							e.preventDefault();
+							lenisInstance.scrollTo(target, { offset: -80 });
+						}
+					});
+				}
 
-			// --- Плавное появление блоков при скролле ---
-			const revealTargets = document.querySelectorAll(
-				'.card, .prose > *, .toc'
-			);
-
-			if (revealTargets.length && !reduceMotion) {
-				revealTargets.forEach((el) => el.classList.add('reveal'));
-
-				const revealObserver = new IntersectionObserver(
-					(entries) => {
-						entries.forEach((entry) => {
-							if (entry.isIntersecting) {
-								entry.target.classList.add('is-revealed');
-								revealObserver.unobserve(entry.target);
-							}
-						});
-					},
-					{ rootMargin: '0px 0px -5% 0px', threshold: 0.05 }
+				// --- Плавное появление блоков при скролле ---
+				const revealTargets = document.querySelectorAll(
+					'.card, .prose > *, .toc'
 				);
 
-				revealTargets.forEach((el) => revealObserver.observe(el));
+				if (revealTargets.length && !reduceMotion) {
+					revealTargets.forEach((el) => el.classList.add('reveal'));
+
+					const revealObserver = new IntersectionObserver(
+						(entries) => {
+							entries.forEach((entry) => {
+								if (entry.isIntersecting) {
+									entry.target.classList.add('is-revealed');
+									revealObserver.unobserve(entry.target);
+								}
+							});
+						},
+						{ rootMargin: '0px 0px -5% 0px', threshold: 0.05 }
+					);
+
+					revealTargets.forEach((el) => revealObserver.observe(el));
+				}
+
+				// --- Переключение темы с расходящимся кругом ---
+				const themeToggle = document.getElementById('theme-toggle');
+
+				if (themeToggle) {
+					const root = document.documentElement;
+
+					const apply = (next: string) => {
+						root.dataset.theme = next;
+						localStorage.setItem('theme', next);
+					};
+
+					themeToggle.addEventListener('click', (event) => {
+						const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+
+						const reduceMotion = window.matchMedia(
+							'(prefers-reduced-motion: reduce)'
+						).matches;
+
+						// @ts-expect-error — startViewTransition есть не во всех браузерах
+						if (reduceMotion || !document.startViewTransition) {
+							apply(next);
+							return;
+						}
+
+						// Круг расходится из центра кнопки
+						const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+						const x = ((rect.left + rect.width / 2) / window.innerWidth) * 100;
+						const y = ((rect.top + rect.height / 2) / window.innerHeight) * 100;
+						root.style.setProperty('--reveal-x', `${x}%`);
+						root.style.setProperty('--reveal-y', `${y}%`);
+
+						root.classList.add('theme-transitioning');
+						// В светлую тему круг сходится обратно
+						root.classList.toggle('reveal-back', next === 'light');
+
+						// @ts-expect-error — см. выше
+						const transition = document.startViewTransition(() => apply(next));
+						
+						transition.finished.finally(() => {
+							root.classList.remove('theme-transitioning', 'reveal-back');
+						});
+					});
+				}
+
+				// --- Меню ---
+				const toggle = document.getElementById('menu-toggle');
+				const menu = document.getElementById('site-menu');
+
+				if (toggle && menu) {
+					const setOpen = (open: boolean) => {
+						toggle.setAttribute('aria-expanded', String(open));
+						toggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+						toggle.classList.toggle('is-open', open);
+						document.body.classList.toggle('menu-open', open);
+
+						if (open) {
+							menu.hidden = false;
+							requestAnimationFrame(() => menu.classList.add('is-visible'));
+						} else {
+							menu.classList.remove('is-visible');
+							setTimeout(() => {
+								if (toggle.getAttribute('aria-expanded') === 'false') menu.hidden = true;
+							}, 300);
+						}
+					};
+
+					toggle.addEventListener('click', () => {
+						setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+					});
+
+					menu.addEventListener('click', (event) => {
+						const target = event.target as HTMLElement;
+						if (target === menu || target.tagName === 'A' || target.closest('#menu-close')) {
+							setOpen(false);
+						}
+					});
+
+					if (!isKeydownAttached) {
+						document.addEventListener('keydown', (event) => {
+							const currentToggle = document.getElementById('menu-toggle');
+							if (event.key === 'Escape' && currentToggle?.getAttribute('aria-expanded') === 'true') {
+								currentToggle.click();
+							}
+						});
+						isKeydownAttached = true;
+					}
+				}
 			}
 
-			// --- Переключение темы с расходящимся кругом ---
-			const themeToggle = document.getElementById('theme-toggle');
-
-			if (themeToggle) {
-				const root = document.documentElement;
-
-				const apply = (next: string) => {
-					root.dataset.theme = next;
-					localStorage.setItem('theme', next);
-				};
-
-				themeToggle.addEventListener('click', (event) => {
-					const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-
-					const reduceMotion = window.matchMedia(
-						'(prefers-reduced-motion: reduce)'
-					).matches;
-
-					// @ts-expect-error — startViewTransition есть не во всех браузерах
-					if (reduceMotion || !document.startViewTransition) {
-						apply(next);
-						return;
-					}
-
-					// Круг расходится из центра кнопки
-					const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-					const x = ((rect.left + rect.width / 2) / window.innerWidth) * 100;
-					const y = ((rect.top + rect.height / 2) / window.innerHeight) * 100;
-					root.style.setProperty('--reveal-x', `${x}%`);
-					root.style.setProperty('--reveal-y', `${y}%`);
-
-					// В светлую тему круг сходится обратно
-					root.classList.toggle('reveal-back', next === 'light');
-
-					// @ts-expect-error — см. выше
-					document.startViewTransition(() => apply(next));
-				});
-			}
-
-			// --- Меню ---
-			const toggle = document.getElementById('menu-toggle');
-			const menu = document.getElementById('site-menu');
-
-			if (toggle && menu) {
-				const setOpen = (open: boolean) => {
-					toggle.setAttribute('aria-expanded', String(open));
-					toggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
-					toggle.classList.toggle('is-open', open);
-					document.body.classList.toggle('menu-open', open);
-
-					if (open) {
-						menu.hidden = false;
-						requestAnimationFrame(() => menu.classList.add('is-visible'));
-					} else {
-						menu.classList.remove('is-visible');
-						setTimeout(() => {
-							if (toggle.getAttribute('aria-expanded') === 'false') menu.hidden = true;
-						}, 300);
-					}
-				};
-
-				toggle.addEventListener('click', () => {
-					setOpen(toggle.getAttribute('aria-expanded') !== 'true');
-				});
-
-				menu.addEventListener('click', (event) => {
-					if (event.target === menu || (event.target as HTMLElement).tagName === 'A') {
-						setOpen(false);
-					}
-				});
-
-				document.addEventListener('keydown', (event) => {
-					if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
-						setOpen(false);
-					}
-				});
-			}
+			// Инициализация скриптов при первой загрузке и после переходов (Astro View Transitions)
+			document.addEventListener('astro:page-load', init);
 
 			// --- Восстановление темы после переходов между страницами ---
 			document.addEventListener('astro:after-swap', () => {
@@ -322,6 +344,7 @@ const currentPath = Astro.url.pathname;
 </html>
 
 <style is:global>
+	/* ---------- Палитра входной страницы ---------- */
 	:root {
 		/* Размеры и шрифты — общие для обеих тем */
 		--max: 1080px;
@@ -330,7 +353,7 @@ const currentPath = Astro.url.pathname;
 		--display: 'Cormorant Garamond', Georgia, serif;
 		--body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-		/* Палитра входной страницы: всегда тёмная, независимо от темы сайта */
+		/* Тёмная палитра для входной страницы (по умолчанию или в тёмной теме) */
 		--entry-bg: #0a0a0a;
 		--entry-ink: #f5f4f2;
 		--entry-ink-dim: rgba(245, 244, 242, 0.5);
@@ -338,6 +361,17 @@ const currentPath = Astro.url.pathname;
 		--entry-accent: #e8946a;
 		--entry-line: rgba(245, 244, 242, 0.18);
 		--entry-card: rgba(245, 244, 242, 0.06);
+	}
+
+	/* Светлая палитра для входной страницы */
+	:root[data-theme='light'] {
+		--entry-bg: #faf6f0;
+		--entry-ink: #241f1b;
+		--entry-ink-dim: rgba(36, 31, 27, 0.65);
+		--entry-ink-soft: rgba(36, 31, 27, 0.85);
+		--entry-accent: #b4552d;
+		--entry-line: rgba(36, 31, 27, 0.15);
+		--entry-card: rgba(36, 31, 27, 0.05);
 	}
 
 	/* ---------- Дневная тема ---------- */
@@ -519,23 +553,18 @@ const currentPath = Astro.url.pathname;
 	}
 
 	.brand-mark {
-		width: 34px;
-		height: 34px;
+		width: 42px;
+		height: 42px;
 		flex: none;
 		display: grid;
 		place-items: center;
 		border-radius: 50%;
-		background: var(--accent);
-		color: var(--on-accent);
+		background: linear-gradient(120deg, #163659 40%, #ea5c15 60%);
+		color: #ffffff;
 		font-family: var(--display);
-		font-size: 0.95rem;
-		letter-spacing: 0.02em;
-	}
-
-	.brand-text {
-		font-family: var(--display);
-		font-size: 1.15rem;
+		font-size: 1.25rem;
 		font-weight: 600;
+		letter-spacing: 0.02em;
 	}
 
 	nav .links {
@@ -668,28 +697,42 @@ const currentPath = Astro.url.pathname;
 		transform: rotate(0) scale(1);
 	}
 
-	/* Расходящийся круг при смене темы */
-	::view-transition-old(root),
+	/* ---------- Плавные переходы между страницами (fade) ---------- */
+	::view-transition-old(root) {
+		animation: page-fade-out 1s ease-out both;
+		mix-blend-mode: normal;
+	}
 	::view-transition-new(root) {
-		animation: none;
+		animation: page-fade-in 1s ease-in both;
 		mix-blend-mode: normal;
 	}
 
-	::view-transition-old(root) {
+	@keyframes page-fade-in {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
+	@keyframes page-fade-out {
+		from { opacity: 1; }
+		to { opacity: 0; }
+	}
+
+	/* ---------- Расходящийся круг при смене темы (отменяет fade) ---------- */
+	html.theme-transitioning::view-transition-old(root) {
+		animation: none;
 		z-index: 1;
 	}
 
-	::view-transition-new(root) {
+	html.theme-transitioning::view-transition-new(root) {
 		z-index: 2;
-		animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+		animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 	}
 
-	html.reveal-back::view-transition-old(root) {
+	html.theme-transitioning.reveal-back::view-transition-old(root) {
 		z-index: 2;
-		animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1) reverse;
+		animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1) reverse forwards;
 	}
 
-	html.reveal-back::view-transition-new(root) {
+	html.theme-transitioning.reveal-back::view-transition-new(root) {
 		z-index: 1;
 		animation: none;
 	}
@@ -828,21 +871,24 @@ const currentPath = Astro.url.pathname;
 		color: var(--accent);
 	}
 
-	.menu-contacts {
-		display: flex;
-		gap: 1.5rem;
-		justify-content: center;
-		flex-wrap: wrap;
-		font-size: 0.9rem;
+	.menu-close {
+		position: absolute;
+		top: 0.7rem;
+		left: 1.15rem;
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-items: center;
+		background: transparent;
+		border: none;
+		color: var(--ink);
+		cursor: pointer;
+		transition: color 0.2s ease, transform 0.2s ease;
 	}
 
-	.menu-contacts a {
-		color: var(--ink-soft);
-		text-decoration: none;
-	}
-
-	.menu-contacts a:hover {
+	.menu-close:hover {
 		color: var(--accent);
+		transform: scale(1.05);
 	}
 
 	/* ---------- Контейнеры и секции ---------- */
@@ -1363,10 +1409,6 @@ const currentPath = Astro.url.pathname;
 			gap: 1rem;
 		}
 
-		.brand-text {
-			font-size: 1.05rem;
-		}
-
 		.card {
 			padding: 1.35rem 1.35rem;
 		}
@@ -1412,23 +1454,5 @@ const currentPath = Astro.url.pathname;
 		}
 	}
 
-	/* ---------- Простые переходы между страницами (fade) ---------- */
-	@keyframes page-fade-in {
-		from { opacity: 0; }
-		to { opacity: 1; }
-	}
 
-	@keyframes page-fade-out {
-		from { opacity: 1; }
-		to { opacity: 0; }
-	}
-
-	/* Применяем fade только к main, не к header/footer, чтобы тема не ломалась */
-	::view-transition-old(main) {
-		animation: page-fade-out 0.2s ease-out both;
-	}
-
-	::view-transition-new(main) {
-		animation: page-fade-in 0.3s ease-in both;
-	}
 </style>
