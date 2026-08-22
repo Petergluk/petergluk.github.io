@@ -258,7 +258,6 @@ const currentPath = Astro.url.pathname;
 							'(prefers-reduced-motion: reduce)'
 						).matches;
 
-						// @ts-expect-error — startViewTransition есть не во всех браузерах
 						if (reduceMotion || !document.startViewTransition) {
 							apply(next);
 							return;
@@ -275,7 +274,6 @@ const currentPath = Astro.url.pathname;
 						// В светлую тему круг сходится обратно
 						root.classList.toggle('reveal-back', next === 'light');
 
-						// @ts-expect-error — см. выше
 						const transition = document.startViewTransition(() => apply(next));
 						
 						transition.finished.finally(() => {
