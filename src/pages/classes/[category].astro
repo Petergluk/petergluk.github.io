@@ -1,0 +1,113 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { categories } from '../../data/categories';
+
+export function getStaticPaths() {
+	return categories.map((category) => ({
+		params: { category: category.id },
+		props: { category },
+	}));
+}
+
+const { category } = Astro.props;
+---
+
+<Layout
+	title={`${category.title} — Мастер-классы Пётр Глухов`}
+	description={category.description}
+>
+	<main id="content">
+		<section class="page-hero">
+			<div class="wrap">
+				<span class="eyebrow">Мастер-классы</span>
+				<h1>{category.title}</h1>
+				<p class="lede">
+					{category.subtitle}
+				</p>
+			</div>
+		</section>
+		<section class="band">
+			<div class="wrap">
+				<div class="prose intro">
+					<p>{category.description}</p>
+				</div>
+
+				<div class="classes-list">
+					<h2>Мастер-классы в этом направлении</h2>
+					<div class="grid grid-auto">
+						{
+							category.classes.map((cls, i) => (
+								<div class="card class-item">
+									<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
+									<h3>{cls.title}</h3>
+									<div class="muted class-desc" set:html={cls.description} />
+									<p class="coming-soon">Скоро</p>
+								</div>
+							))
+						}
+					</div>
+				</div>
+
+				<p class="back"><a href="/classes/">← Все направления</a></p>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	.intro {
+		margin-bottom: 4rem;
+	}
+	.intro p {
+		font-size: 1.15rem;
+		line-height: 1.6;
+		color: var(--prose-ink);
+	}
+	.classes-list h2 {
+		font-family: var(--display);
+		font-weight: 500;
+		font-size: 2.2rem;
+		margin-bottom: 2rem;
+		color: var(--ink);
+	}
+	.class-item {
+		padding-bottom: 1.5rem;
+	}
+	.class-item h3 {
+		font-size: 1.25rem;
+		margin-top: 1.2rem;
+		margin-bottom: 0.5rem;
+	}
+	.class-desc {
+		font-size: 0.95rem;
+		line-height: 1.5;
+		margin-bottom: 0.5rem;
+	}
+	.class-desc :global(strong) {
+		color: var(--ink);
+		font-weight: 600;
+	}
+	.class-desc :global(br) {
+		display: block;
+		content: "";
+		margin-top: 0.5rem;
+	}
+	.coming-soon {
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--accent);
+		font-weight: 500;
+		margin-top: auto;
+		padding-top: 1rem;
+	}
+	.back {
+		margin: 4rem 0 0;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--line);
+	}
+	.back a {
+		text-decoration: none;
+		font-size: 0.95rem;
+	}
+</style>

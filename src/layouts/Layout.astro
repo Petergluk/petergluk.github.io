@@ -353,6 +353,7 @@ const currentPath = Astro.url.pathname;
 
 		/* Тёмная палитра для входной страницы (по умолчанию или в тёмной теме) */
 		--entry-bg: #0a0a0a;
+		--entry-glow: rgba(20, 35, 65, 0.6);
 		--entry-ink: #f5f4f2;
 		--entry-ink-dim: rgba(245, 244, 242, 0.5);
 		--entry-ink-soft: rgba(245, 244, 242, 0.65);
@@ -364,6 +365,7 @@ const currentPath = Astro.url.pathname;
 	/* Светлая палитра для входной страницы */
 	:root[data-theme='light'] {
 		--entry-bg: #faf6f0;
+		--entry-glow: transparent;
 		--entry-ink: #241f1b;
 		--entry-ink-dim: rgba(36, 31, 27, 0.65);
 		--entry-ink-soft: rgba(36, 31, 27, 0.85);
