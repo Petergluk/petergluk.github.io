@@ -2,7 +2,7 @@ backend:
   name: github
   repo: petergluk/petergluk.github.io
   branch: main
-  site_domain: petergluk.github.io
+  app_id: Ov23linvpkxrgJyb7Val
 
 # Allow saving images directly to the public/images folder
 media_folder: "public/images"
