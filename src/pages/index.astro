@@ -1,27 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import homeData from '../data/pages/home.json';
 ---
 
 <Layout
-	title="Пётр Глухов — соматический коуч, телесный практик"
-	description="Соматический метакоучинг онлайн, телесные сессии и массаж очно, мастер-классы и семинары по телесной работе, психосоматике и практикам внимания."
+	title={homeData.title}
+	description={homeData.description}
 	entry={true}
 >
 	<main id="content" class="entry">
 		<div class="entry-inner">
 			<div class="entry-portrait">
-				<img src="/images/portrait.jpg" alt="Пётр Глухов" />
+				<img src={homeData.portrait} alt="Пётр Глухов" />
 			</div>
 			<div class="entry-content">
-				<p class="entry-text">
-					Здравствуйте. Меня зовут Пётр Глухов. Больше пятнадцати лет я исследую связь тела
-					и психики. Провожу{' '}
-					<a href="/sessions/">индивидуальные сессии</a>, веду{' '}
-					<a href="/classes/">классы и семинары</a>, пишу{' '}
-					<a href="/texts/">тексты</a> о телесной работе. Сейчас я в дороге и открыт к
-					встречам — можно написать в{' '}
-					<a href="https://t.me/Petergluk">Telegram</a>.
-				</p>
+				<p class="entry-text" set:html={homeData.intro_text}></p>
 			</div>
 		</div>
 	</main>

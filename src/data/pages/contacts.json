@@ -1,0 +1,33 @@
+{
+  "title": "Контакты — Пётр Глухов",
+  "description": "Связаться со мной можно в Telegram или ВКонтакте.",
+  "hero": {
+    "eyebrow": "Связаться",
+    "title": "Контакты",
+    "lede": "По вопросам личных сессий, мастер-классов или просто чтобы поздороваться. Я всегда открыт к общению."
+  },
+  "links": [
+    {
+      "url": "https://t.me/Petergluk",
+      "tag": "Написать",
+      "title": "Telegram",
+      "muted": "Основной способ связи со мной."
+    },
+    {
+      "url": "https://vk.ru/petergluk",
+      "tag": "Написать",
+      "title": "ВКонтакте",
+      "muted": "Вы можете написать мне в личные сообщения."
+    },
+    {
+      "url": "https://www.facebook.com/petergluk/",
+      "tag": "Написать",
+      "title": "Facebook",
+      "muted": "Вы можете написать мне в Messenger."
+    }
+  ],
+  "cta": {
+    "url": "https://t.me/danceofsense",
+    "text": "Подписаться на Telegram-канал"
+  }
+}

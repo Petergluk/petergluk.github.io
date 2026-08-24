@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { categories } from '../../data/categories';
+import categoriesData from '../../data/categories.json';
+const categories = categoriesData.categories;
 
 const formats = [
 	{ title: 'Мастер-класс', text: '1,5–2 часа, фестивальный или студийный формат' },

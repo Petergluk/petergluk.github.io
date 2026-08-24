@@ -1,8 +1,9 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import { categories } from '../../../data/categories';
+import categoriesData from '../../../data/categories.json';
+const categories = categoriesData.categories;
 
-export function getStaticPaths() {
+export function getStaticPaths() { const categories = categoriesData.categories;
 	return categories.flatMap((category) =>
 		category.classes.map((cls) => ({
 			params: { category: category.id, class: cls.id },

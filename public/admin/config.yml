@@ -2,7 +2,6 @@ backend:
   name: github
   repo: petergluk/petergluk.github.io
   branch: main
-  app_id: Ov23linvpkxrgJyb7Val
 
 # Allow saving images directly to the public/images folder
 media_folder: "public/images"
@@ -30,3 +29,91 @@ collections:
         widget: "list"
         required: false
       - { label: "Текст", name: "body", widget: "markdown" }
+  - name: "pages"
+    label: "Страницы сайта (Главная, Сессии, и др.)"
+    files:
+      - label: "Главная страница"
+        name: "home"
+        file: "src/data/pages/home.json"
+        fields:
+          - { label: "Заголовок окна (Title)", name: "title", widget: "string" }
+          - { label: "Описание для SEO", name: "description", widget: "string" }
+          - { label: "Портрет (Обложка)", name: "portrait", widget: "image" }
+          - { label: "Текст (HTML/Текст)", name: "intro_text", widget: "markdown", buttons: ["bold", "italic", "link"] }
+
+      - label: "Контакты"
+        name: "contacts"
+        file: "src/data/pages/contacts.json"
+        fields:
+          - { label: "Заголовок окна (Title)", name: "title", widget: "string" }
+          - { label: "Описание для SEO", name: "description", widget: "string" }
+          - label: "Hero блок"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Надзаголовок (Eyebrow)", name: "eyebrow", widget: "string" }
+              - { label: "Главный заголовок", name: "title", widget: "string" }
+              - { label: "Текст", name: "lede", widget: "text" }
+          - label: "Кнопка Telegram"
+            name: "cta"
+            widget: "object"
+            fields:
+              - { label: "Текст кнопки", name: "text", widget: "string" }
+              - { label: "Ссылка", name: "url", widget: "string" }
+          - label: "Социальные сети"
+            name: "links"
+            widget: "list"
+            fields:
+              - { label: "Название (Например, Telegram)", name: "title", widget: "string" }
+              - { label: "URL", name: "url", widget: "string" }
+              - { label: "Тег (кнопка)", name: "tag", widget: "string" }
+              - { label: "Описание", name: "muted", widget: "string" }
+
+      - label: "Индивидуальные сессии"
+        name: "sessions"
+        file: "src/data/pages/sessions.json"
+        fields:
+          - { label: "Заголовок окна (Title)", name: "title", widget: "string" }
+          - { label: "Описание для SEO", name: "description", widget: "string" }
+          - label: "Hero блок"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Надзаголовок (Eyebrow)", name: "eyebrow", widget: "string" }
+              - { label: "Главный заголовок", name: "title", widget: "string" }
+              - { label: "Текст", name: "lede", widget: "text" }
+          - label: "Форматы и стоимость"
+            name: "formats"
+            widget: "list"
+            fields:
+              - { label: "Заголовок формата", name: "title", widget: "string" }
+              - { label: "Цена", name: "price", widget: "string" }
+              - { label: "Тег", name: "tag", widget: "string" }
+              - { label: "Абзацы текста", name: "body", widget: "list", field: {label: "Абзац", name: "paragraph", widget: "string"} }
+          - label: "Принципы работы"
+            name: "principles"
+            widget: "list"
+            fields:
+              - { label: "Заголовок", name: "title", widget: "string" }
+              - { label: "Текст", name: "text", widget: "text" }
+
+      - label: "Категории и классы"
+        name: "categories"
+        file: "src/data/categories.json"
+        fields:
+          - label: "Категории направлений"
+            name: "categories"
+            widget: "list"
+            fields:
+              - { label: "URL (id)", name: "id", widget: "string" }
+              - { label: "Название направления", name: "title", widget: "string" }
+              - { label: "Подзаголовок", name: "subtitle", widget: "string" }
+              - { label: "Описание", name: "description", widget: "text" }
+              - label: "Мастер-классы внутри направления"
+                name: "classes"
+                widget: "list"
+                fields:
+                  - { label: "URL (id)", name: "id", widget: "string" }
+                  - { label: "Название класса", name: "title", widget: "string" }
+                  - { label: "Короткое описание (анонс)", name: "description", widget: "markdown" }
+                  - { label: "Полный текст", name: "content", widget: "markdown" }
