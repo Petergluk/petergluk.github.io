@@ -23,7 +23,7 @@ collections:
       - { label: "Layout", name: "layout", widget: "hidden", default: "../../layouts/TextLayout.astro" }
       - { label: "Заголовок", name: "title", widget: "string" }
       - { label: "Описание (анонс)", name: "description", widget: "text", required: false }
-      - { label: "Дата", name: "date", widget: "date", required: false }
+      - { label: "Дата", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false, required: false }
       - { label: "Обложка (Картинка)", name: "image", widget: "image", required: false }
       - label: "Теги"
         name: "tags"
