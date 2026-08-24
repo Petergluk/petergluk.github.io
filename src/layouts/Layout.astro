@@ -174,7 +174,7 @@ const currentPath = Astro.url.pathname;
 				</div>
 			</div>
 			<div class="footer-base">
-				<span>© {new Date().getFullYear()} Пётр Глухов</span>
+				<span>© {new Date().getFullYear()} Пётр Глухов <span style="opacity: 0.5; margin: 0 0.5rem;">|</span> <a href="/admin/">Admin</a></span>
 			</div>
 		</footer>
 
@@ -1348,13 +1348,23 @@ const currentPath = Astro.url.pathname;
 		border-top: 1px solid var(--deep-line);
 	}
 
-	.footer-base span {
+	.footer-base > span {
 		display: block;
 		max-width: var(--max);
 		margin: 0 auto;
 		padding: 1.1rem 1.5rem;
 		font-size: 0.82rem;
 		color: var(--deep-faint);
+	}
+
+	.footer-base a {
+		color: inherit;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.footer-base a:hover {
+		color: var(--paper);
 	}
 
 	/* ---------- Адаптив ---------- */

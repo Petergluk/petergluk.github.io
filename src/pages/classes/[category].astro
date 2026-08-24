@@ -34,15 +34,21 @@ const { category } = Astro.props;
 
 				<div class="classes-list">
 					<h2>Мастер-классы в этом направлении</h2>
-					<div class="grid grid-auto">
+					<div class="classes-grid">
 						{
 							category.classes.map((cls, i) => (
-								<div class="card class-item">
-									<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
-									<h3>{cls.title}</h3>
-									<div class="muted class-desc" set:html={cls.description} />
-									<p class="coming-soon">Скоро</p>
-								</div>
+								<a class="card class-item-horiz" href={`/classes/${category.id}/${cls.id}/`}>
+									{cls.image ? (
+										<div class="card-cover-horiz" style={`background-image: url('${cls.image}'); background-size: cover; background-position: center;`} />
+									) : (
+										<div class={`card-cover-horiz watercolor watercolor-${(i % 3) + 1}`} />
+									)}
+									<div class="class-content">
+										<h3>{cls.title}</h3>
+										<div class="muted class-desc" set:html={cls.description} />
+										<p class="link-label"><span class="arrow">Подробнее →</span></p>
+									</div>
+								</a>
 							))
 						}
 					</div>
@@ -70,13 +76,51 @@ const { category } = Astro.props;
 		margin-bottom: 2rem;
 		color: var(--ink);
 	}
-	.class-item {
-		padding-bottom: 1.5rem;
+	.classes-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
 	}
-	.class-item h3 {
-		font-size: 1.25rem;
-		margin-top: 1.2rem;
-		margin-bottom: 0.5rem;
+	.class-item-horiz {
+		display: flex;
+		flex-direction: column;
+		text-decoration: none;
+		color: inherit;
+		padding: 0;
+		overflow: hidden;
+	}
+	@media (min-width: 768px) {
+		.class-item-horiz {
+			flex-direction: row;
+		}
+	}
+	.card-cover-horiz {
+		height: 200px;
+		flex-shrink: 0;
+	}
+	@media (min-width: 768px) {
+		.card-cover-horiz {
+			width: 300px;
+			height: auto;
+		}
+	}
+	.class-content {
+		padding: 2rem;
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+	}
+	.class-content h3 {
+		font-size: 1.35rem;
+		margin-top: 0;
+		margin-bottom: 0.8rem;
+	}
+	.link-label {
+		margin-top: auto;
+		padding-top: 1rem;
+		color: var(--accent);
+		font-size: 0.9rem;
+		font-weight: 500;
 	}
 	.class-desc {
 		font-size: 0.95rem;
@@ -91,15 +135,6 @@ const { category } = Astro.props;
 		display: block;
 		content: "";
 		margin-top: 0.5rem;
-	}
-	.coming-soon {
-		font-size: 0.8rem;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--accent);
-		font-weight: 500;
-		margin-top: auto;
-		padding-top: 1rem;
 	}
 	.back {
 		margin: 4rem 0 0;

@@ -1,0 +1,171 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { categories } from '../../../data/categories';
+
+export function getStaticPaths() {
+	return categories.flatMap((category) =>
+		category.classes.map((cls) => ({
+			params: { category: category.id, class: cls.id },
+			props: { category, classItem: cls },
+		}))
+	);
+}
+
+const { category, classItem } = Astro.props;
+
+// Fetch related texts from texts directory
+const allPosts = Object.values(
+	import.meta.glob('../../texts/*.md', { eager: true })
+) as any[];
+
+const relatedPosts = allPosts
+	.filter((post) => {
+		const tags = post.frontmatter?.tags || [];
+		// Match by category title or simple mapping
+		const tagMap: Record<string, string> = {
+			smysly: 'смысл',
+			chuvstva: 'эмоции',
+			telo: 'телесная работа',
+			dyhanie: 'состояние',
+			embodiment: 'психосоматика',
+			prikosnovenie: 'массаж',
+			otnosheniya: 'общество',
+			tishina: 'практики внимания',
+		};
+		const targetTag = tagMap[category.id] || category.title.toLowerCase();
+		return tags.includes(targetTag);
+	})
+	.sort(
+		(a, b) =>
+			(b.frontmatter.date ?? '').localeCompare(a.frontmatter.date ?? '')
+	);
+
+const formatDate = (date?: string) =>
+	date
+		? new Date(date).toLocaleDateString('ru-RU', {
+				day: 'numeric',
+				month: 'long',
+				year: 'numeric',
+		  })
+		: null;
+---
+
+<Layout
+	title={`${classItem.title} — Мастер-класс`}
+	description={`Мастер-класс Петра Глухова: ${classItem.title}`}
+>
+	<main id="content">
+		<section class="page-hero">
+			<div class="wrap-narrow">
+				<span class="eyebrow"><a href={`/classes/${category.id}/`} class="muted">Направление: {category.title}</a></span>
+				<h1>{classItem.title}</h1>
+			</div>
+		</section>
+
+		<section class="band">
+			<div class="wrap-narrow">
+				<div class="article-body">
+					<article class="prose">
+						<div set:html={classItem.content} />
+					</article>
+				</div>
+			</div>
+		</section>
+
+		{relatedPosts.length > 0 && (
+			<section class="band band-warm">
+				<div class="wrap">
+					<div class="section-head">
+						<span class="eyebrow">Материалы по теме</span>
+						<h2>Тексты о {category.title.toLowerCase()}х</h2>
+					</div>
+					<div class="grid grid-3">
+						{relatedPosts.slice(0, 3).map((post, i) => (
+							<a
+								class="card post-card"
+								href={post.url}
+							>
+								<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
+								{formatDate(post.frontmatter.date) && (
+									<p class="post-date">{formatDate(post.frontmatter.date)}</p>
+								)}
+								<h3>{post.frontmatter.title ?? 'Без названия'}</h3>
+								{post.frontmatter.description && (
+									<p class="muted">{post.frontmatter.description}</p>
+								)}
+								<p><span class="arrow">Читать →</span></p>
+							</a>
+						))}
+					</div>
+				</div>
+			</section>
+		)}
+		
+		<section class="band band-dark">
+			<div class="wrap" style="text-align: center;">
+				<span class="eyebrow">Участие</span>
+				<h2>Записаться или пригласить</h2>
+				<p class="muted">
+					Чтобы узнать о ближайших датах проведения этого класса или пригласить меня провести его для вашей группы, напишите мне.
+				</p>
+				<div class="cta-row" style="justify-content: center; margin-top: 2rem;">
+					<a class="btn" href="https://t.me/Petergluk">Написать в Telegram</a>
+				</div>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<style is:global>
+	.eyebrow a {
+		text-decoration: none;
+		color: inherit;
+		transition: color 0.2s;
+	}
+	.eyebrow a:hover {
+		color: var(--accent);
+	}
+	.article-body {
+		margin-bottom: 4rem;
+	}
+	.prose {
+		font-size: 1.08rem;
+		line-height: 1.78;
+	}
+	.prose h2 {
+		font-size: 1.6rem;
+		margin: 1.4rem 0 0.8rem;
+		font-family: var(--display);
+	}
+	.prose h3 {
+		margin: 1.9rem 0 0.5rem;
+	}
+	.prose p {
+		margin: 0 0 1.2rem;
+		color: var(--prose-ink);
+	}
+	.prose ul,
+	.prose ol {
+		margin: 0 0 1.2rem;
+		padding-left: 1.3rem;
+	}
+	.prose li {
+		margin-bottom: 0.55rem;
+	}
+	.post-date {
+		font-size: 0.78rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+		margin: 0 0 0.5rem;
+	}
+	.post-card {
+		text-decoration: none;
+		color: inherit;
+	}
+	.post-card h3 {
+		font-size: 1.25rem;
+		margin-bottom: 0.5rem;
+		margin-top: 1rem;
+	}
+</style>

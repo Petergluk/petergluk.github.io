@@ -1,0 +1,32 @@
+backend:
+  name: github
+  repo: petergluk/petergluk.github.io
+  branch: main
+  site_domain: petergluk.github.io
+
+# Allow saving images directly to the public/images folder
+media_folder: "public/images"
+public_folder: "/images"
+
+# Configure the UI language
+locale: "ru"
+
+collections:
+  - name: "texts"
+    label: "Тексты (Статьи)"
+    folder: "src/pages/texts"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Layout", name: "layout", widget: "hidden", default: "../../layouts/TextLayout.astro" }
+      - { label: "Заголовок", name: "title", widget: "string" }
+      - { label: "Описание (анонс)", name: "description", widget: "text", required: false }
+      - { label: "Дата", name: "date", widget: "date", required: false }
+      - { label: "Обложка (Картинка)", name: "image", widget: "image", required: false }
+      - label: "Теги"
+        name: "tags"
+        widget: "list"
+        required: false
+      - { label: "Текст", name: "body", widget: "markdown" }

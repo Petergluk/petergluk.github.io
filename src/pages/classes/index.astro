@@ -39,7 +39,11 @@ const formats = [
 					{
 						categories.map((cat, i) => (
 							<a class="card cat-card" href={`/classes/${cat.id}/`}>
-								<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
+								{cat.image ? (
+									<div class="card-cover" style={`background-image: url('${cat.image}'); background-size: cover; background-position: center;`} />
+								) : (
+									<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
+								)}
 								<h3>{cat.title}</h3>
 								<p class="muted">{cat.subtitle}</p>
 								<p class="link-label"><span class="arrow">Подробнее →</span></p>

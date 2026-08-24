@@ -8,6 +8,7 @@ type Post = {
 		description?: string;
 		date?: string;
 		tags?: string[];
+		image?: string;
 	};
 };
 
@@ -88,7 +89,11 @@ const formatDate = (date?: string) =>
 										href={post.url}
 										data-tags={(post.frontmatter.tags ?? []).join('|')}
 									>
-										<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
+										{post.frontmatter.image ? (
+											<div class="card-cover" style={`background-image: url('${post.frontmatter.image}'); background-size: cover; background-position: center;`} />
+										) : (
+											<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
+										)}
 										{formatDate(post.frontmatter.date) && (
 											<p class="post-date">{formatDate(post.frontmatter.date)}</p>
 										)}
