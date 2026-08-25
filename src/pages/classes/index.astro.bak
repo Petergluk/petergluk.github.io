@@ -1,0 +1,185 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import categoriesData from '../../data/categories.json';
+
+const categories = categoriesData.categories;
+
+const formats = [
+	{ title: 'Мастер-класс', text: '1,5–2 часа, фестивальный или студийный формат' },
+	{ title: 'Однодневный интенсив', text: 'Погружение в одну тему с практикой' },
+	{ title: 'Семинар 2–3 дня', text: 'Глубокая проработка навыка' },
+	{ title: 'Курс или ретрит', text: 'До 10 дней — полное погружение' },
+];
+
+// Разделяем направления на блоки в строгом порядке, запрошенном пользователем
+const group1 = ['smysly', 'chuvstva', 'telo'].map(id => categories.find(c => c.id === id)).filter(Boolean);
+const group2 = ['dyhanie', 'tishina'].map(id => categories.find(c => c.id === id)).filter(Boolean);
+const group3 = ['prikosnovenie', 'embodiment', 'otnosheniya'].map(id => categories.find(c => c.id === id)).filter(Boolean);
+---
+
+<Layout
+	title="Мастер-классы и семинары — Пётр Глухов"
+	description="Классы по медитативным и дыхательным практикам, соматическим зарядкам, телесной работе и психосоматике. От фестивального мастер-класса до многодневного семинара."
+>
+	<main id="content">
+		<section class="page-hero">
+			<div class="wrap">
+				<span class="eyebrow">Группы и семинары</span>
+				<h1>Мастер-классы и семинары</h1>
+				<p class="lede">
+					Мои программы и мастер-классы выстроены вокруг 8 базовых направлений, каждое из которых — это шаг к настоящему контакту с собой и миром.
+				</p>
+			</div>
+		</section>
+
+		<!-- Блок 1: Смыслы, Чувства, Тело -->
+		<section class="band">
+			<div class="wrap">
+				<div class="section-head">
+					<span class="eyebrow">Основа практики</span>
+					<h2>Смыслы, чувства, тело</h2>
+				</div>
+				<div class="grid grid-3">
+					{
+						group1.map((cat, i) => (
+							<a class="card cat-card" href={`/classes/${cat.id}/`}>
+								{cat.image ? (
+									<div class="card-cover" style={`background-image: url('${cat.image}'); background-size: cover; background-position: center;`} />
+								) : (
+									<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
+								)}
+								<h3>{cat.title}</h3>
+								<p class="muted">{cat.subtitle}</p>
+								<p class="link-label"><span class="arrow">Подробнее →</span></p>
+							</a>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<!-- Блок 2: Дыхание, Тишина -->
+		<section class="band band-warm">
+			<div class="wrap">
+				<div class="section-head">
+					<span class="eyebrow">Тонкая настройка</span>
+					<h2>Дыхание и практики тишины</h2>
+				</div>
+				<div class="grid grid-2">
+					{
+						group2.map((cat, i) => (
+							<a class="card cat-card" href={`/classes/${cat.id}/`}>
+								{cat.image ? (
+									<div class="card-cover" style={`background-image: url('${cat.image}'); background-size: cover; background-position: center;`} />
+								) : (
+									<div class={`card-cover watercolor watercolor-${(i % 3) + 2}`} />
+								)}
+								<h3>{cat.title}</h3>
+								<p class="muted">{cat.subtitle}</p>
+								<p class="link-label"><span class="arrow">Подробнее →</span></p>
+							</a>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<!-- Блок 3: Прикосновение, Эмбодимент, Отношения -->
+		<section class="band">
+			<div class="wrap">
+				<div class="section-head">
+					<span class="eyebrow">Взаимодействие</span>
+					<h2>Контакт и проявление</h2>
+				</div>
+				<div class="grid grid-3">
+					{
+						group3.map((cat, i) => (
+							<a class="card cat-card" href={`/classes/${cat.id}/`}>
+								{cat.image ? (
+									<div class="card-cover" style={`background-image: url('${cat.image}'); background-size: cover; background-position: center;`} />
+								) : (
+									<div class={`card-cover watercolor watercolor-${(i % 3) + 3}`} />
+								)}
+								<h3>{cat.title}</h3>
+								<p class="muted">{cat.subtitle}</p>
+								<p class="link-label"><span class="arrow">Подробнее →</span></p>
+							</a>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<!-- Организаторам -->
+		<section class="band band-warm">
+			<div class="wrap">
+				<div class="section-head">
+					<span class="eyebrow">Организаторам</span>
+					<h2>Приглашайте в свой город</h2>
+					<p class="muted">
+						Сейчас я путешествую и открыт к выступлениям на новых площадках: студии,
+						фестивали, ретрит-центры, камерные пространства. Большинство классов не
+						требуют от участников подготовки и подходят как телесным практикам и
+						массажистам, так и людям без опыта.
+					</p>
+				</div>
+				<div class="grid grid-4">
+					{
+						formats.map((item) => (
+							<div class="card format-card">
+								<h3>{item.title}</h3>
+								<p class="muted">{item.text}</p>
+							</div>
+						))
+					}
+				</div>
+				<div class="cta-row">
+					<a class="btn" href="https://t.me/Petergluk">Обсудить в Telegram</a>
+					<a class="btn secondary" href="https://wa.me/qr/RX52QNWK3LNOB1">WhatsApp</a>
+				</div>
+			</div>
+		</section>
+
+		<section class="band">
+			<div class="wrap" style="text-align: center;">
+				<span class="eyebrow">Сотрудничество</span>
+				<h2>Хотите класс у себя?</h2>
+				<p class="muted">Напишите — обсудим тему, формат и даты.</p>
+				<div class="cta-row" style="justify-content: center;">
+					<a class="btn" href="https://t.me/Petergluk">Telegram</a>
+					<a class="btn secondary" href="https://wa.me/qr/RX52QNWK3LNOB1">WhatsApp</a>
+				</div>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	.cat-card {
+		text-decoration: none;
+		color: inherit;
+		display: flex;
+		flex-direction: column;
+	}
+	.cat-card h3 {
+		font-size: 1.6rem;
+		margin-bottom: 0.4rem;
+	}
+	.link-label {
+		margin-top: auto;
+		padding-top: 1rem;
+		color: var(--accent);
+		font-size: 0.9rem;
+		font-weight: 500;
+	}
+	.format-card {
+		padding: 1.3rem 1.4rem;
+	}
+	.format-card h3 {
+		font-size: 1.05rem;
+	}
+	.format-card p {
+		margin: 0;
+		font-size: 0.92rem;
+	}
+</style>

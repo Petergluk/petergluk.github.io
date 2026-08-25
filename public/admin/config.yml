@@ -118,3 +118,64 @@ collections:
                   - { label: "Название класса", name: "title", widget: "string" }
                   - { label: "Короткое описание (анонс)", name: "description", widget: "markdown" }
                   - { label: "Полный текст", name: "content", widget: "markdown" }
+  - name: "landings"
+    label: "Лендинги (Конструктор)"
+    folder: "src/data/landings"
+    create: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: "json"
+    fields:
+      - { label: "Заголовок страницы (Title)", name: "title", widget: "string" }
+      - { label: "Описание для SEO", name: "description", widget: "string", required: false }
+      - label: "Блоки страницы"
+        name: "blocks"
+        widget: "list"
+        types:
+          - label: "Обложка (Hero)"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Надзаголовок", name: "eyebrow", widget: "string", required: false }
+              - { label: "Заголовок", name: "title", widget: "string" }
+              - { label: "Текст", name: "lede", widget: "text", required: false }
+          - label: "Текстовый блок"
+            name: "text_block"
+            widget: "object"
+            fields:
+              - { label: "Текст", name: "content", widget: "markdown" }
+              - { label: "Серый фон?", name: "warm_bg", widget: "boolean", default: false, required: false }
+          - label: "Сетка карточек"
+            name: "grid"
+            widget: "object"
+            fields:
+              - { label: "Надзаголовок", name: "eyebrow", widget: "string", required: false }
+              - { label: "Заголовок блока", name: "title", widget: "string", required: false }
+              - { label: "Текст-введение", name: "description", widget: "text", required: false }
+              - { label: "Количество колонок", name: "columns", widget: "select", options: ["2", "3", "4", "auto"], default: "3" }
+              - { label: "Серый фон?", name: "warm_bg", widget: "boolean", default: false, required: false }
+              - label: "Карточки"
+                name: "items"
+                widget: "list"
+                fields:
+                  - { label: "Картинка", name: "image", widget: "image", required: false }
+                  - { label: "Заголовок", name: "title", widget: "string" }
+                  - { label: "Текст", name: "text", widget: "text", required: false }
+                  - { label: "Надпись на ссылке (если нужна)", name: "link_label", widget: "string", required: false }
+                  - { label: "URL ссылки", name: "url", widget: "string", required: false }
+          - label: "Призыв к действию (Кнопки)"
+            name: "cta"
+            widget: "object"
+            fields:
+              - { label: "Надзаголовок", name: "eyebrow", widget: "string", required: false }
+              - { label: "Заголовок блока", name: "title", widget: "string", required: false }
+              - { label: "Текст", name: "description", widget: "text", required: false }
+              - { label: "Выравнивание по центру?", name: "center", widget: "boolean", default: true, required: false }
+              - { label: "Серый фон?", name: "warm_bg", widget: "boolean", default: false, required: false }
+              - label: "Кнопки"
+                name: "buttons"
+                widget: "list"
+                fields:
+                  - { label: "Текст", name: "text", widget: "string" }
+                  - { label: "URL", name: "url", widget: "string" }
+                  - { label: "Вторичный стиль?", name: "secondary", widget: "boolean", default: false, required: false }

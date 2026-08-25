@@ -1,0 +1,119 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+	const pageFiles = import.meta.glob('../data/landings/*.json', { eager: true });
+	
+	return Object.keys(pageFiles).map(filePath => {
+		const page = pageFiles[filePath] as any;
+		// Extract filename without .json
+		const slug = filePath.split('/').pop()?.replace('.json', '');
+		return {
+			params: { slug },
+			props: { page }
+		}
+	});
+}
+
+const { page } = Astro.props;
+const blocks = page.blocks || [];
+---
+
+<Layout title={page.title} description={page.description}>
+	<main id="content">
+		{blocks.map((block: any, index: number) => {
+			if (block.type === 'hero') {
+				return (
+					<section class="page-hero">
+						<div class="wrap">
+							{block.eyebrow && <span class="eyebrow">{block.eyebrow}</span>}
+							<h1>{block.title}</h1>
+							{block.lede && <p class="lede">{block.lede}</p>}
+						</div>
+					</section>
+				);
+			}
+			
+			if (block.type === 'text_block') {
+				return (
+					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
+						<div class="wrap" style="max-width: 800px; margin: 0 auto; font-size: 1.1rem; line-height: 1.6;">
+							<div set:html={block.content ? marked.parse(block.content) : ''} />
+						</div>
+					</section>
+				);
+			}
+			
+			if (block.type === 'grid') {
+				return (
+					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
+						<div class="wrap">
+							{(block.eyebrow || block.title || block.description) && (
+								<div class="section-head">
+									{block.eyebrow && <span class="eyebrow">{block.eyebrow}</span>}
+									{block.title && <h2>{block.title}</h2>}
+									{block.description && <p class="muted">{block.description}</p>}
+								</div>
+							)}
+							
+							<div class={`grid grid-${block.columns || '3'}`}>
+								{(block.items || []).map((item: any, i: number) => {
+									const inner = (
+										<>
+											{item.image ? (
+												<div class="card-cover" style={`background-image: url('${item.image}'); background-size: cover; background-position: center; min-height: 200px;`} />
+											) : (
+												<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} style="min-height: 160px;" />
+											)}
+											<div style="padding: 1.5rem;">
+												<h3 style="margin-top: 0;">{item.title}</h3>
+												{item.text && <p class="muted" style="margin-bottom: 0;">{item.text}</p>}
+												{item.link_label && <p class="link-label" style="margin-top: 1rem; color: var(--accent); font-weight: 500;"><span class="arrow">{item.link_label} →</span></p>}
+											</div>
+										</>
+									);
+									
+									return item.url ? (
+										<a class="card" href={item.url} style="text-decoration: none; color: inherit; display: flex; flex-direction: column; overflow: hidden;">
+											{inner}
+										</a>
+									) : (
+										<div class="card" style="display: flex; flex-direction: column; overflow: hidden;">
+											{inner}
+										</div>
+									);
+								})}
+							</div>
+						</div>
+					</section>
+				);
+			}
+			
+			if (block.type === 'cta') {
+				return (
+					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
+						<div class="wrap" style={block.center !== false ? 'text-align: center;' : ''}>
+							{(block.eyebrow || block.title || block.description) && (
+								<div class="section-head" style={block.center !== false ? 'margin-left: auto; margin-right: auto;' : ''}>
+									{block.eyebrow && <span class="eyebrow">{block.eyebrow}</span>}
+									{block.title && <h2>{block.title}</h2>}
+									{block.description && <p class="muted">{block.description}</p>}
+								</div>
+							)}
+							<div class="cta-row" style={block.center !== false ? 'justify-content: center;' : ''}>
+								{(block.buttons || []).map((btn: any) => (
+									<a class={`btn ${btn.secondary ? 'secondary' : ''}`} href={btn.url}>
+										{btn.text}
+									</a>
+								))}
+							</div>
+						</div>
+					</section>
+				);
+			}
+			
+			return null;
+		})}
+	</main>
+</Layout>
