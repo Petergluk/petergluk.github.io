@@ -11,7 +11,7 @@ import homeData from '../data/pages/home.json';
 	<main id="content" class="entry">
 		<div class="entry-inner">
 			<div class="entry-portrait">
-				<img src={homeData.portrait} alt="Пётр Глухов" />
+				<img src={`${homeData.portrait}?v=${Date.now()}`} alt="Пётр Глухов" />
 			</div>
 			<div class="entry-content">
 				<p class="entry-text" set:html={homeData.intro_text}></p>
@@ -68,7 +68,7 @@ import homeData from '../data/pages/home.json';
 		margin: 0;
 	}
 
-	.entry-text a {
+	.entry-text :global(a) {
 		color: var(--entry-ink);
 		text-decoration: none;
 		font-weight: 600;
@@ -79,7 +79,7 @@ import homeData from '../data/pages/home.json';
 		transition: background-size 0.3s ease, color 0.2s ease;
 	}
 
-	.entry-text a:hover {
+	.entry-text :global(a:hover) {
 		color: var(--entry-accent);
 		background-size: 100% 2px;
 	}
