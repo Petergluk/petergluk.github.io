@@ -38,7 +38,7 @@ const { category } = Astro.props;
 					<div class="classes-grid">
 						{
 							category.classes.map((cls, i) => (
-								<a class="card class-item-horiz" href={`/classes/${category.id}/${cls.id}/`}>
+								<a class="card class-item-horiz" href={cls.link || `/classes/${category.id}/${cls.id}/`}>
 									{cls.image ? (
 										<div class="card-cover-horiz" style={`background-image: url('${cls.image}'); background-size: cover; background-position: center;`} />
 									) : (
