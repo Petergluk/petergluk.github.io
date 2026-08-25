@@ -39,6 +39,7 @@ collections:
           - { label: "Заголовок окна (Title)", name: "title", widget: "string" }
           - { label: "Описание для SEO", name: "description", widget: "string" }
           - { label: "Портрет (Обложка)", name: "portrait", widget: "image" }
+          - { label: "Размер портрета (px)", name: "portrait_size", widget: "number", value_type: "int", default: 320, min: 100, max: 800, required: false }
           - { label: "Текст (HTML/Текст)", name: "intro_text", widget: "markdown", buttons: ["bold", "italic", "link"] }
 
       - label: "Контакты"

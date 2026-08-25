@@ -1,6 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import homeData from '../data/pages/home.json';
+
+const portraitSize = homeData.portrait_size || 320;
+const portraitGridSize = Math.floor(portraitSize * 0.875);
 ---
 
 <Layout
@@ -8,7 +11,7 @@ import homeData from '../data/pages/home.json';
 	description={homeData.description}
 	entry={true}
 >
-	<main id="content" class="entry">
+	<main id="content" class="entry" style={`--portrait-size: ${portraitSize}px; --portrait-grid: ${portraitGridSize}px;`}>
 		<div class="entry-inner">
 			<div class="entry-portrait">
 				<img src={`${homeData.portrait}?v=${Date.now()}`} alt="Пётр Глухов" />
@@ -41,14 +44,14 @@ import homeData from '../data/pages/home.json';
 
 	@media (min-width: 768px) {
 		.entry-inner {
-			grid-template-columns: 280px 1fr;
+			grid-template-columns: var(--portrait-grid, 280px) 1fr;
 			gap: 4rem;
 		}
 	}
 
 	.entry-portrait {
 		width: 100%;
-		max-width: 320px;
+		max-width: var(--portrait-size, 320px);
 		margin: 0 auto;
 	}
 
