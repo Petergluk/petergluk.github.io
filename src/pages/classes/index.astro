@@ -46,11 +46,11 @@ const group3 = ['prikosnovenie', 'embodiment', 'otnosheniya'].map(id => categori
 								{cat.image ? (
 									<div class="card-cover" style={`background-image: url('${cat.image}'); background-size: cover; background-position: center;`} />
 								) : (
-									<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
+									<div class="card-cover" style={`background-image: url('/images/defolt/bg_${String((i % 15) + 1).padStart(2, "0")}.jpg'); background-size: cover; background-position: center;`} />
 								)}
-								<h3>{cat.title}</h3>
+								<h3 style="font-size: 1.6rem; margin-top: 1rem; margin-bottom: 0.5rem; line-height: 1.2;">{cat.title}</h3>
 								<p class="muted">{cat.subtitle}</p>
-								<p class="link-label"><span class="arrow">Подробнее →</span></p>
+								
 							</a>
 						))
 					}
@@ -72,11 +72,11 @@ const group3 = ['prikosnovenie', 'embodiment', 'otnosheniya'].map(id => categori
 								{cat.image ? (
 									<div class="card-cover" style={`background-image: url('${cat.image}'); background-size: cover; background-position: center;`} />
 								) : (
-									<div class={`card-cover watercolor watercolor-${(i % 3) + 2}`} />
+									<div class="card-cover" style={`background-image: url('/images/defolt/bg_${String(((i + 2) % 15) + 1).padStart(2, "0")}.jpg'); background-size: cover; background-position: center;`} />
 								)}
-								<h3>{cat.title}</h3>
+								<h3 style="font-size: 1.6rem; margin-top: 1rem; margin-bottom: 0.5rem; line-height: 1.2;">{cat.title}</h3>
 								<p class="muted">{cat.subtitle}</p>
-								<p class="link-label"><span class="arrow">Подробнее →</span></p>
+								
 							</a>
 						))
 					}
@@ -98,11 +98,11 @@ const group3 = ['prikosnovenie', 'embodiment', 'otnosheniya'].map(id => categori
 								{cat.image ? (
 									<div class="card-cover" style={`background-image: url('${cat.image}'); background-size: cover; background-position: center;`} />
 								) : (
-									<div class={`card-cover watercolor watercolor-${(i % 3) + 3}`} />
+									<div class="card-cover" style={`background-image: url('/images/defolt/bg_${String(((i + 4) % 15) + 1).padStart(2, "0")}.jpg'); background-size: cover; background-position: center;`} />
 								)}
-								<h3>{cat.title}</h3>
+								<h3 style="font-size: 1.6rem; margin-top: 1rem; margin-bottom: 0.5rem; line-height: 1.2;">{cat.title}</h3>
 								<p class="muted">{cat.subtitle}</p>
-								<p class="link-label"><span class="arrow">Подробнее →</span></p>
+								
 							</a>
 						))
 					}

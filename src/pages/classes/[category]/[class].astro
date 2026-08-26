@@ -86,15 +86,13 @@ const formatDate = (date?: string) =>
 								class="card post-card"
 								href={post.url}
 							>
-								<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} />
-								{formatDate(post.frontmatter.date) && (
-									<p class="post-date">{formatDate(post.frontmatter.date)}</p>
-								)}
-								<h3>{post.frontmatter.title ?? 'Без названия'}</h3>
+								<div class="card-cover" style={`background-image: url('/images/defolt/bg_${String((i % 15) + 1).padStart(2, "0")}.jpg'); background-size: cover; background-position: center;`} />
+								
+								<h3 style="font-size: 1.6rem; margin-top: 1rem; margin-bottom: 0.5rem; line-height: 1.2;">{post.frontmatter.title ?? 'Без названия'}</h3>
 								{post.frontmatter.description && (
 									<p class="muted">{post.frontmatter.description}</p>
 								)}
-								<p><span class="arrow">Читать →</span></p>
+								
 							</a>
 						))}
 					</div>

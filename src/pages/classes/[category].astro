@@ -42,12 +42,12 @@ const { category } = Astro.props;
 									{cls.image ? (
 										<div class="card-cover-horiz" style={`background-image: url('${cls.image}'); background-size: cover; background-position: center;`} />
 									) : (
-										<div class={`card-cover-horiz watercolor watercolor-${(i % 3) + 1}`} />
+										<div class="card-cover-horiz" style={`background-image: url('/images/defolt/bg_${String((i % 15) + 1).padStart(2, "0")}.jpg'); background-size: cover; background-position: center;`} />
 									)}
 									<div class="class-content">
-										<h3>{cls.title}</h3>
+										<h3 style="font-size: 1.6rem; margin-bottom: 0.8rem; line-height: 1.2;">{cls.title}</h3>
 										<div class="muted class-desc" set:html={cls.description} />
-										<p class="link-label"><span class="arrow">Подробнее →</span></p>
+										
 									</div>
 								</a>
 							))

@@ -15,7 +15,7 @@ const formattedDate = frontmatter.date
 const tocItems = (headings as { depth: number; text: string; slug: string }[]).filter(
 	(h) => h.depth === 2
 );
-const showToc = Boolean(frontmatter.toc) && tocItems.length >= 2;
+const showToc = frontmatter.toc !== false && tocItems.length >= 2;
 ---
 
 <Layout title={frontmatter.title} description={frontmatter.description}>
@@ -53,8 +53,20 @@ const showToc = Boolean(frontmatter.toc) && tocItems.length >= 2;
 						</nav>
 					)
 				}
+				
 				<div class="article-body">
+					{(() => {
+						let imgUrl = frontmatter.image;
+						if (!imgUrl) {
+							const defaultIdx = ((frontmatter.title || '').length % 15) + 1;
+							imgUrl = `/images/defolt/bg_${String(defaultIdx).padStart(2, '0')}.jpg`;
+						}
+						return (
+							<div class="article-cover" style={`background-image: url('${imgUrl}'); background-size: cover; background-position: center; border-radius: var(--radius); width: 100%; height: 350px; margin-bottom: 2rem;`} />
+						);
+					})()}
 					<article class="prose">
+
 						<slot />
 					</article>
 					<p class="back"><a href="/texts/">← Все тексты</a></p>

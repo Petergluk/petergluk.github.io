@@ -1,13 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { marked } from 'marked';
+import ScrollReveal from '../components/ScrollReveal.tsx';
 
 export async function getStaticPaths() {
 	const pageFiles = import.meta.glob('../data/landings/*.json', { eager: true });
 	
 	return Object.keys(pageFiles).map(filePath => {
 		const page = pageFiles[filePath] as any;
-		// Extract filename without .json
 		const slug = filePath.split('/').pop()?.replace('.json', '');
 		return {
 			params: { slug },
@@ -25,6 +25,7 @@ const blocks = page.blocks || [];
 		{blocks.map((block: any, index: number) => {
 			if (block.type === 'hero') {
 				return (
+					<ScrollReveal client:visible>
 					<section class="page-hero">
 						<div class="wrap">
 							{block.eyebrow && <span class="eyebrow">{block.eyebrow}</span>}
@@ -32,21 +33,25 @@ const blocks = page.blocks || [];
 							{block.lede && <p class="lede">{block.lede}</p>}
 						</div>
 					</section>
+					</ScrollReveal>
 				);
 			}
 			
 			if (block.type === 'text_block') {
 				return (
+					<ScrollReveal client:visible>
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
-						<div class="wrap" style="max-width: 800px; margin: 0 auto; font-size: 1.1rem; line-height: 1.6;">
-							<div set:html={block.content ? marked.parse(block.content) : ''} />
+						<div class="wrap" style="font-size: 1.1rem; line-height: 1.6;">
+							<div class="prose" set:html={block.content ? marked.parse(block.content) : ''} />
 						</div>
 					</section>
+					</ScrollReveal>
 				);
 			}
 			
 			if (block.type === 'grid') {
 				return (
+					<ScrollReveal client:visible>
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap">
 							{(block.eyebrow || block.title || block.description) && (
@@ -64,12 +69,11 @@ const blocks = page.blocks || [];
 											{item.image ? (
 												<div class="card-cover" style={`background-image: url('${item.image}'); background-size: cover; background-position: center; min-height: 200px;`} />
 											) : (
-												<div class={`card-cover watercolor watercolor-${(i % 3) + 1}`} style="min-height: 160px;" />
+												<div class="card-cover" style={`background-image: url('/images/defolt/bg_${String((i % 15) + 1).padStart(2, "0")}.jpg'); background-size: cover; background-position: center; min-height: 160px;`} />
 											)}
 											<div style="padding: 1.5rem;">
-												<h3 style="margin-top: 0;">{item.title}</h3>
+												<h3 style="font-size: 1.6rem; margin-top: 0; margin-bottom: 0.5rem; line-height: 1.2;">{item.title}</h3>
 												{item.text && <p class="muted" style="margin-bottom: 0;">{item.text}</p>}
-												{item.link_label && <p class="link-label" style="margin-top: 1rem; color: var(--accent); font-weight: 500;"><span class="arrow">{item.link_label} →</span></p>}
 											</div>
 										</>
 									);
@@ -87,11 +91,13 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
+					</ScrollReveal>
 				);
 			}
 			
 			if (block.type === 'cta') {
 				return (
+					<ScrollReveal client:visible>
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap" style={block.center !== false ? 'text-align: center;' : ''}>
 							{(block.eyebrow || block.title || block.description) && (
@@ -110,12 +116,13 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
+					</ScrollReveal>
 				);
 			}
-			
-			
+						
 			if (block.type === 'image_text') {
 				return (
+					<ScrollReveal client:visible>
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap">
 							<div style={`display: grid; gap: 3rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: center;`}>
@@ -132,13 +139,15 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
+					</ScrollReveal>
 				);
 			}
 
 			if (block.type === 'accordion') {
 				return (
+					<ScrollReveal client:visible>
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
-						<div class="wrap" style="max-width: 800px; margin: 0 auto;">
+						<div class="wrap">
 							{(block.eyebrow || block.title) && (
 								<div class="section-head">
 									{block.eyebrow && <span class="eyebrow">{block.eyebrow}</span>}
@@ -147,21 +156,23 @@ const blocks = page.blocks || [];
 							)}
 							<div class="accordion-list" style="display: flex; flex-direction: column; gap: 1rem;">
 								{(block.items || []).map((item: any) => (
-									<details style="background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.5rem;">
+									<details style="background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.5rem;">
 										<summary style="font-size: 1.1rem; font-weight: 500; cursor: pointer; list-style-position: inside;">{item.title}</summary>
-										<div style="margin-top: 1rem; color: var(--ink-dim);" set:html={item.content ? marked.parse(item.content) : ''} />
+										<div class="prose" style="margin-top: 1rem; color: var(--prose-ink);" set:html={item.content ? marked.parse(item.content) : ''} />
 									</details>
 								))}
 							</div>
 						</div>
 					</section>
+					</ScrollReveal>
 				);
 			}
 
 			if (block.type === 'video') {
 				return (
+					<ScrollReveal client:visible>
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
-						<div class="wrap" style="max-width: 900px; margin: 0 auto; text-align: center;">
+						<div class="wrap" style="text-align: center;">
 							{(block.eyebrow || block.title) && (
 								<div class="section-head">
 									{block.eyebrow && <span class="eyebrow">{block.eyebrow}</span>}
@@ -173,11 +184,13 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
+					</ScrollReveal>
 				);
 			}
 
 			if (block.type === 'reviews') {
 				return (
+					<ScrollReveal client:visible>
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap">
 							{(block.eyebrow || block.title) && (
@@ -199,13 +212,15 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
+					</ScrollReveal>
 				);
 			}
 
 			if (block.type === 'html') {
 				return (
+					<ScrollReveal client:visible>
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
-						<div class="wrap" style="max-width: 800px; margin: 0 auto; text-align: center;">
+						<div class="wrap" style="text-align: center;">
 							{(block.eyebrow || block.title) && (
 								<div class="section-head">
 									{block.eyebrow && <span class="eyebrow">{block.eyebrow}</span>}
@@ -215,6 +230,7 @@ const blocks = page.blocks || [];
 							<div set:html={block.code || ''} />
 						</div>
 					</section>
+					</ScrollReveal>
 				);
 			}
 
