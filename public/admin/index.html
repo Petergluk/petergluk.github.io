@@ -3,84 +3,94 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
     <title>Админка (CMS)</title>
     <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml" />
   </head>
   <body>
-    <script type="module">
-      import 'https://unpkg.com/@sveltia/cms@0.197.0/dist/sveltia-cms.js';
+    <!-- Container for Sveltia CMS -->
+    <div id="nc-root"></div>
 
-      try {
-        CMS.registerPreviewStyle('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
-        CMS.registerPreviewStyle('/admin/preview.css');
+    <!-- Official Sveltia CMS bundle -->
+    <script src="https://unpkg.com/@sveltia/cms@0.197.0/dist/sveltia-cms.js"></script>
 
-        function formatText(text) {
-          if (!text) return '';
-          return text
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-            .replace(/\n\n/g, '<br/><br/>')
-            .replace(/\n/g, '<br/>');
-        }
+    <!-- Custom preview styles and template -->
+    <script>
+      (function() {
+        try {
+          if (typeof CMS === 'undefined' && typeof window.CMS !== 'undefined') {
+            window.CMS = window.CMS;
+          }
+          var cms = window.CMS;
+          if (!cms) return;
 
-        function HomePreview(props) {
-          const rawData = (typeof props.entry?.toJS === 'function' ? props.entry.toJS().data : props.entry?.data) || {};
-          const portraitSize = Number(rawData.portrait_size) || 285;
-          const rawFontSize = rawData.font_size != null ? Number(rawData.font_size) : 2.35;
-          const fontSizeRem = rawFontSize > 10 ? rawFontSize / 16 : rawFontSize;
-          const rawLineHeight = rawData.line_height != null ? Number(rawData.line_height) : 1.3;
-          const lineHeight = rawLineHeight > 0 ? rawLineHeight : 1.3;
-          const photoHeight = Math.round(portraitSize * 1.25);
+          cms.registerPreviewStyle('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
+          cms.registerPreviewStyle('/admin/preview.css');
 
-          let imageSrc = rawData.portrait || '/images/portrait.jpg';
-          if (props.getAsset && rawData.portrait) {
-            try {
-              const asset = props.getAsset(rawData.portrait);
-              if (asset) imageSrc = asset.url || asset.toString() || imageSrc;
-            } catch (e) {}
+          function formatText(text) {
+            if (!text) return '';
+            return text
+              .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+              .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+              .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+              .replace(/\n\n/g, '<br/><br/>')
+              .replace(/\n/g, '<br/>');
           }
 
-          const rawText = rawData.intro_text || '';
-          const html = formatText(rawText);
+          function HomePreview(props) {
+            var rawData = (typeof props.entry?.toJS === 'function' ? props.entry.toJS().data : props.entry?.data) || {};
+            var portraitSize = Number(rawData.portrait_size) || 285;
+            var rawFontSize = rawData.font_size != null ? Number(rawData.font_size) : 2.35;
+            var fontSizeRem = rawFontSize > 10 ? rawFontSize / 16 : rawFontSize;
+            var rawLineHeight = rawData.line_height != null ? Number(rawData.line_height) : 1.3;
+            var lineHeight = rawLineHeight > 0 ? rawLineHeight : 1.3;
+            var photoHeight = Math.round(portraitSize * 1.25);
 
-          return window.h('div', {
-            className: 'preview-entry',
-            style: {
-              '--portrait-size': portraitSize + 'px',
-              '--entry-font-size': fontSizeRem + 'rem',
-              '--entry-line-height': String(lineHeight)
+            var imageSrc = rawData.portrait || '/images/portrait.jpg';
+            if (props.getAsset && rawData.portrait) {
+              try {
+                var asset = props.getAsset(rawData.portrait);
+                if (asset) imageSrc = asset.url || asset.toString() || imageSrc;
+              } catch (e) {}
             }
-          },
-            window.h('div', { className: 'preview-badge' },
-              `Превью: фото ${portraitSize}px (высота ~${photoHeight}px) • шрифт ${fontSizeRem}rem • интервал ${lineHeight}`
-            ),
-            window.h('div', { className: 'preview-inner' },
-              window.h('div', { className: 'preview-portrait' },
-                window.h('img', { src: imageSrc, alt: 'Портрет' })
-              ),
-              window.h('div', { className: 'preview-content' },
-                window.h('div', {
-                  className: 'preview-text',
-                  dangerouslySetInnerHTML: { __html: html }
-                })
-              )
-            )
-          );
-        }
 
-        CMS.registerPreviewTemplate('home', HomePreview);
-        CMS.registerPreviewTemplate('home_page', HomePreview);
-        CMS.registerPreviewTemplate('pages', (props) => {
-          const slug = props.entry?.get ? (props.entry.get('slug') || props.entry.get('path') || '') : '';
-          if (!slug || slug.includes('home')) {
-            return HomePreview(props);
+            var rawText = rawData.intro_text || '';
+            var html = formatText(rawText);
+
+            var h = window.h || window.createElement;
+            if (!h) return null;
+
+            return h('div', {
+              className: 'preview-entry',
+              style: {
+                '--portrait-size': portraitSize + 'px',
+                '--entry-font-size': fontSizeRem + 'rem',
+                '--entry-line-height': String(lineHeight)
+              }
+            },
+              h('div', { className: 'preview-badge' },
+                'Превью: фото ' + portraitSize + 'px (высота ~' + photoHeight + 'px) • шрифт ' + fontSizeRem + 'rem • интервал ' + lineHeight
+              ),
+              h('div', { className: 'preview-inner' },
+                h('div', { className: 'preview-portrait' },
+                  h('img', { src: imageSrc, alt: 'Портрет' })
+                ),
+                h('div', { className: 'preview-content' },
+                  h('div', {
+                    className: 'preview-text',
+                    dangerouslySetInnerHTML: { __html: html }
+                  })
+                )
+              )
+            );
           }
-          return null;
-        });
-      } catch (err) {
-        console.error('Failed to register preview template:', err);
-      }
+
+          cms.registerPreviewTemplate('home', HomePreview);
+          cms.registerPreviewTemplate('home_page', HomePreview);
+        } catch (err) {
+          console.warn('CMS preview registration error:', err);
+        }
+      })();
     </script>
   </body>
 </html>
