@@ -1,7 +1,10 @@
 :root {
   --display: 'Cormorant Garamond', Georgia, serif;
   --body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --entry-bg: #faf6f0;
+  --entry-bg: #f3ebdf;
+  --entry-bg-image: radial-gradient(circle at 85% 15%, rgba(240, 224, 202, 0.75) 0%, transparent 55%),
+                    radial-gradient(circle at 15% 85%, rgba(228, 208, 182, 0.55) 0%, transparent 50%),
+                    linear-gradient(155deg, #f9f5ed 0%, #f3ebdf 48%, #ebdcc8 100%);
   --entry-ink: #241f1b;
   --entry-ink-dim: rgba(36, 31, 27, 0.65);
   --entry-accent: #b4552d;
@@ -17,6 +20,7 @@ body {
   padding: 0;
   font-family: var(--body);
   background-color: var(--entry-bg);
+  background-image: var(--entry-bg-image);
   color: var(--entry-ink);
   -webkit-font-smoothing: antialiased;
 }
@@ -29,6 +33,7 @@ body {
   justify-content: center;
   padding: 1.5rem 1rem;
   background-color: var(--entry-bg);
+  background-image: var(--entry-bg-image);
 }
 
 .preview-badge {
@@ -48,12 +53,18 @@ body {
   max-width: 60rem;
   width: 100%;
   display: grid;
-  grid-template-columns: var(--portrait-size, 285px) minmax(260px, 1fr);
+  grid-template-columns: min(var(--portrait-size, 285px), 40%) 1fr;
   gap: 2.5rem;
   align-items: center;
 }
 
-@media (max-width: 480px) {
+@media (min-width: 768px) {
+  .preview-inner {
+    grid-template-columns: var(--portrait-size, 285px) minmax(260px, 1fr);
+  }
+}
+
+@media (max-width: 579px) {
   .preview-inner {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -64,6 +75,12 @@ body {
   width: 100%;
   max-width: var(--portrait-size, 285px);
   margin: 0 auto;
+}
+
+@media (max-width: 579px) {
+  .preview-portrait {
+    max-width: min(var(--portrait-size, 285px), 230px);
+  }
 }
 
 .preview-portrait img {

@@ -38,7 +38,7 @@ const formattedIntroText = (homeData.intro_text || '').replace(/\n/g, '<br/>');
 		place-items: center;
 		padding: 3rem 1.75rem;
 		background-color: var(--entry-bg);
-		background-image: radial-gradient(circle at 100% 0%, var(--entry-glow, transparent) 0%, transparent 60%);
+		background-image: var(--entry-bg-image, radial-gradient(circle at 100% 0%, var(--entry-glow, transparent) 0%, transparent 60%));
 	}
 
 	.entry-inner {
@@ -48,6 +48,13 @@ const formattedIntroText = (homeData.intro_text || '').replace(/\n/g, '<br/>');
 		grid-template-columns: 1fr;
 		gap: 2.5rem;
 		align-items: center;
+	}
+
+	@media (min-width: 580px) {
+		.entry-inner {
+			grid-template-columns: min(var(--portrait-size, 285px), 40%) 1fr;
+			gap: 2.5rem;
+		}
 	}
 
 	@media (min-width: 768px) {
@@ -63,6 +70,12 @@ const formattedIntroText = (homeData.intro_text || '').replace(/\n/g, '<br/>');
 		margin: 0 auto;
 	}
 
+	@media (max-width: 579px) {
+		.entry-portrait {
+			max-width: min(var(--portrait-size, 285px), 230px);
+		}
+	}
+
 	.entry-portrait img {
 		width: 100%;
 		height: auto;
@@ -73,7 +86,7 @@ const formattedIntroText = (homeData.intro_text || '').replace(/\n/g, '<br/>');
 	.entry-text {
 		font-family: var(--display);
 		font-weight: 400;
-		font-size: clamp(1.35rem, 4.5vw, var(--entry-font-size, 2.35rem));
+		font-size: clamp(1.5rem, 3vw + 0.7rem, var(--entry-font-size, 2.35rem));
 		line-height: var(--entry-line-height, 1.3);
 		color: var(--entry-ink-dim);
 		margin: 0;

@@ -355,6 +355,7 @@ const currentPath = Astro.url.pathname;
 		/* Тёмная палитра для входной страницы (по умолчанию или в тёмной теме) */
 		--entry-bg: #0a0a0a;
 		--entry-glow: rgba(20, 35, 65, 0.6);
+		--entry-bg-image: radial-gradient(circle at 100% 0%, var(--entry-glow, transparent) 0%, transparent 60%);
 		--entry-ink: #f5f4f2;
 		--entry-ink-dim: rgba(245, 244, 242, 0.5);
 		--entry-ink-soft: rgba(245, 244, 242, 0.65);
@@ -363,10 +364,13 @@ const currentPath = Astro.url.pathname;
 		--entry-card: rgba(245, 244, 242, 0.06);
 	}
 
-	/* Светлая палитра для входной страницы */
+	/* Светлая палитра для входной страницы: песочно-бежевый с лёгким градиентом */
 	:root[data-theme='light'] {
-		--entry-bg: #faf6f0;
-		--entry-glow: transparent;
+		--entry-bg: #f3ebdf;
+		--entry-glow: rgba(235, 218, 194, 0.7);
+		--entry-bg-image: radial-gradient(circle at 85% 15%, rgba(240, 224, 202, 0.75) 0%, transparent 55%),
+		                  radial-gradient(circle at 15% 85%, rgba(228, 208, 182, 0.55) 0%, transparent 50%),
+		                  linear-gradient(155deg, #f9f5ed 0%, #f3ebdf 48%, #ebdcc8 100%);
 		--entry-ink: #241f1b;
 		--entry-ink-dim: rgba(36, 31, 27, 0.65);
 		--entry-ink-soft: rgba(36, 31, 27, 0.85);
@@ -375,28 +379,32 @@ const currentPath = Astro.url.pathname;
 		--entry-card: rgba(36, 31, 27, 0.05);
 	}
 
-	/* ---------- Дневная тема ---------- */
+	/* ---------- Дневная тема: песочно-бежевый фон с мягким градиентом ---------- */
 	:root,
 	:root[data-theme='light'] {
 		--ink: #241f1b;
-		--ink-soft: #6b6259;
-		--ink-faint: #796f62;
-		--paper: #faf6f0;
-		--paper-warm: #f3ece2;
+		--ink-soft: #635a50;
+		--ink-faint: #7d7265;
+		--paper: #f3ebdf;
+		--paper-warm: #ebdcc8;
 		--card: #ffffff;
 		--accent: #b4552d;
 		--accent-deep: #8f4020;
-		--accent-soft: #f6e6dc;
-		--line: #e6ddd1;
+		--accent-soft: #f4e3d3;
+		--line: #dfd2bd;
 		--on-accent: #ffffff;
 
-		--header-bg: rgba(250, 246, 240, 0.85);
-		--overlay-bg: rgba(250, 246, 240, 0.97);
-		--hero-glow: #e9dfd2;
-		--glow-warm: #f6e6dc;
-		--glow-cool: #e9dfd2;
-		--card-hover-line: #d9c9b6;
-		--prose-ink: #3a332d;
+		--bg-gradient: radial-gradient(circle at 90% 12%, rgba(240, 224, 202, 0.65) 0%, transparent 52%),
+		               radial-gradient(circle at 10% 88%, rgba(228, 208, 182, 0.5) 0%, transparent 48%),
+		               linear-gradient(160deg, #f9f5ed 0%, #f3ebdf 45%, #eadbc7 100%);
+
+		--header-bg: rgba(243, 235, 223, 0.85);
+		--overlay-bg: rgba(243, 235, 223, 0.97);
+		--hero-glow: #e4d4bd;
+		--glow-warm: #f4e1cd;
+		--glow-cool: #e4d4bd;
+		--card-hover-line: #d0beaa;
+		--prose-ink: #383029;
 
 		/* Контрастная полоса и подвал */
 		--deep-bg: #2a2420;
@@ -425,6 +433,7 @@ const currentPath = Astro.url.pathname;
 		--line: #2e3947;
 		--on-accent: #1a1206;
 
+		--bg-gradient: none;
 		--header-bg: rgba(22, 29, 41, 0.85);
 		--overlay-bg: rgba(22, 29, 41, 0.97);
 		--hero-glow: #23303f;
@@ -451,6 +460,7 @@ const currentPath = Astro.url.pathname;
 
 	html {
 		scroll-behavior: smooth;
+		background-color: var(--paper);
 	}
 
 	html,
@@ -460,7 +470,9 @@ const currentPath = Astro.url.pathname;
 	}
 
 	body {
-		background: var(--paper);
+		background-color: var(--paper);
+		background-image: var(--bg-gradient, none);
+		background-attachment: fixed;
 		color: var(--ink);
 		font-family: var(--body);
 		font-size: 17px;
