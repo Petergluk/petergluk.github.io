@@ -25,7 +25,7 @@ const blocks = page.blocks || [];
 		{blocks.map((block: any, index: number) => {
 			if (block.type === 'hero') {
 				return (
-					<ScrollReveal client:visible>
+					
 					<section class="page-hero">
 						<div class="wrap">
 							{block.eyebrow && <span class="eyebrow">{block.eyebrow}</span>}
@@ -33,25 +33,25 @@ const blocks = page.blocks || [];
 							{block.lede && <p class="lede">{block.lede}</p>}
 						</div>
 					</section>
-					</ScrollReveal>
+					
 				);
 			}
 			
 			if (block.type === 'text_block') {
 				return (
-					<ScrollReveal client:visible>
+					
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap" style="font-size: 1.1rem; line-height: 1.6;">
 							<div class="prose" set:html={block.content ? marked.parse(block.content) : ''} />
 						</div>
 					</section>
-					</ScrollReveal>
+					
 				);
 			}
 			
 			if (block.type === 'grid') {
 				return (
-					<ScrollReveal client:visible>
+					
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap">
 							{(block.eyebrow || block.title || block.description) && (
@@ -91,13 +91,13 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
-					</ScrollReveal>
+					
 				);
 			}
 			
 			if (block.type === 'cta') {
 				return (
-					<ScrollReveal client:visible>
+					
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap" style={block.center !== false ? 'text-align: center;' : ''}>
 							{(block.eyebrow || block.title || block.description) && (
@@ -116,13 +116,13 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
-					</ScrollReveal>
+					
 				);
 			}
 						
 			if (block.type === 'image_text') {
 				return (
-					<ScrollReveal client:visible>
+					
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap">
 							<div style={`display: grid; gap: 3rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: center;`}>
@@ -139,13 +139,13 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
-					</ScrollReveal>
+					
 				);
 			}
 
 			if (block.type === 'accordion') {
 				return (
-					<ScrollReveal client:visible>
+					
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap">
 							{(block.eyebrow || block.title) && (
@@ -164,13 +164,13 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
-					</ScrollReveal>
+					
 				);
 			}
 
 			if (block.type === 'video') {
 				return (
-					<ScrollReveal client:visible>
+					
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap" style="text-align: center;">
 							{(block.eyebrow || block.title) && (
@@ -184,13 +184,13 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
-					</ScrollReveal>
+					
 				);
 			}
 
 			if (block.type === 'reviews') {
 				return (
-					<ScrollReveal client:visible>
+					
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap">
 							{(block.eyebrow || block.title) && (
@@ -212,13 +212,13 @@ const blocks = page.blocks || [];
 							</div>
 						</div>
 					</section>
-					</ScrollReveal>
+					
 				);
 			}
 
 			if (block.type === 'html') {
 				return (
-					<ScrollReveal client:visible>
+					
 					<section class={`band ${block.warm_bg ? 'band-warm' : ''}`}>
 						<div class="wrap" style="text-align: center;">
 							{(block.eyebrow || block.title) && (
@@ -230,7 +230,7 @@ const blocks = page.blocks || [];
 							<div set:html={block.code || ''} />
 						</div>
 					</section>
-					</ScrollReveal>
+					
 				);
 			}
 

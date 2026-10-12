@@ -28,7 +28,7 @@ const showToc = frontmatter.toc !== false && tocItems.length >= 2;
 					{formattedDate && <span class="article-date">{formattedDate}</span>}
 					{
 						(frontmatter.tags ?? []).map((tag: string) => (
-							<span class="tag">{tag}</span>
+							<a href={`/texts/?tag=${encodeURIComponent(tag)}`} class="tag">#{tag}</a>
 						))
 					}
 				</p>

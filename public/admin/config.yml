@@ -11,6 +11,21 @@ public_folder: "/images"
 locale: "ru"
 
 collections:
+  - name: "home"
+    label: "Главная страница (Конфиг: фото, шрифт, текст)"
+    files:
+      - label: "Настройки главной страницы"
+        name: "home"
+        file: "src/data/pages/home.json"
+        fields:
+          - { label: "Размер фото (ширина в px, по умолч. 285)", name: "portrait_size", widget: "number", value_type: "int", default: 285, min: 180, max: 600, step: 5, required: false }
+          - { label: "Размер шрифта текста (rem, по умолч. 2.35)", name: "font_size", widget: "number", value_type: "float", default: 2.35, min: 1.2, max: 4.0, step: 0.05, required: false }
+          - { label: "Межстрочный интервал (line-height, по умолч. 1.3)", name: "line_height", widget: "number", value_type: "float", default: 1.3, min: 1.0, max: 2.5, step: 0.05, required: false }
+          - { label: "Портрет (фото)", name: "portrait", widget: "image" }
+          - { label: "Текст на главной странице", name: "intro_text", widget: "markdown", buttons: ["bold", "italic", "link"] }
+          - { label: "Заголовок окна (Title)", name: "title", widget: "string" }
+          - { label: "Описание для SEO", name: "description", widget: "string" }
+
   - name: "texts"
     label: "Тексты (Статьи)"
     folder: "src/pages/texts"
@@ -29,18 +44,10 @@ collections:
         widget: "list"
         required: false
       - { label: "Текст", name: "body", widget: "markdown" }
+
   - name: "pages"
-    label: "Страницы сайта (Главная, Сессии, и др.)"
+    label: "Остальные страницы (Контакты, Сессии, и др.)"
     files:
-      - label: "Главная страница"
-        name: "home"
-        file: "src/data/pages/home.json"
-        fields:
-          - { label: "Заголовок окна (Title)", name: "title", widget: "string" }
-          - { label: "Описание для SEO", name: "description", widget: "string" }
-          - { label: "Портрет (Обложка)", name: "portrait", widget: "image" }
-          - { label: "Размер портрета (px)", name: "portrait_size", widget: "number", value_type: "int", default: 320, min: 100, max: 800, required: false }
-          - { label: "Текст (HTML/Текст)", name: "intro_text", widget: "markdown", buttons: ["bold", "italic", "link"] }
 
       - label: "Контакты"
         name: "contacts"

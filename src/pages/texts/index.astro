@@ -13,7 +13,6 @@ type Post = {
 };
 
 const posts = Object.values(import.meta.glob('./*.md', { eager: true })) as Post[];
-
 posts.sort((a, b) => (b.frontmatter.date ?? '').localeCompare(a.frontmatter.date ?? ''));
 
 // Собираем теги и считаем, сколько текстов в каждом
@@ -23,17 +22,7 @@ for (const post of posts) {
 		counts.set(tag, (counts.get(tag) ?? 0) + 1);
 	}
 }
-
 const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-
-const formatDate = (date?: string) =>
-	date
-		? new Date(date).toLocaleDateString('ru-RU', {
-				day: 'numeric',
-				month: 'long',
-				year: 'numeric',
-			})
-		: null;
 ---
 
 <Layout
@@ -54,7 +43,7 @@ const formatDate = (date?: string) =>
 		{
 			tags.length > 0 && (
 				<section class="tagbar">
-					<div class="wrap">
+					<div class="wrap" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
 						<div class="tag-filter" role="group" aria-label="Фильтр по темам">
 							<button class="chip is-active" data-tag="*" aria-pressed="true">
 								Все
@@ -67,6 +56,15 @@ const formatDate = (date?: string) =>
 								</button>
 							))}
 						</div>
+                        
+                        <div class="view-toggles" aria-label="Переключить вид">
+                            <button class="view-btn is-active" data-view="grid" aria-label="Вид карточками" title="Сетка">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            </button>
+                            <button class="view-btn" data-view="list" aria-label="Вид списком" title="Список">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                            </button>
+                        </div>
 					</div>
 				</section>
 			)
@@ -83,26 +81,24 @@ const formatDate = (date?: string) =>
 					) : (
 						<>
 							<div class="grid grid-auto" id="post-grid">
-								{posts.map((post, i) => (
-									<a
-										class="card post-card"
-										href={post.url}
-										data-tags={(post.frontmatter.tags ?? []).join('|')}
-									>
-										{post.frontmatter.image ? (
-											<div class="card-cover" style={`background-image: url('${post.frontmatter.image}'); background-size: cover; background-position: center;`} />
-										) : (
-											<div class="card-cover" style={`background-image: url('/images/defolt/bg_${String((i % 15) + 1).padStart(2, "0")}.jpg'); background-size: cover; background-position: center;`} />
-										)}
-										
-										<h3 style="font-size: 1.6rem; margin-top: 1rem; margin-bottom: 0.5rem; line-height: 1.2;">{post.frontmatter.title ?? 'Без названия'}</h3>
-										{post.frontmatter.description && (
-											<p class="muted">{post.frontmatter.description}</p>
-										)}
-										
-										
-									</a>
-								))}
+								{posts.map((post, i) => {
+                                    const imgUrl = post.frontmatter.image || `/images/defolt/bg_${String((i % 15) + 1).padStart(2, "0")}.jpg`;
+                                    return (
+                                        <a
+                                            class="card post-card"
+                                            href={post.url}
+                                            data-tags={(post.frontmatter.tags ?? []).join('|')}
+                                        >
+                                            <div class="card-cover" style={`background-image: url('${imgUrl}'); background-size: cover; background-position: center;`} />
+                                            <div class="post-content">
+                                                <h3 class="post-title">{post.frontmatter.title ?? 'Без названия'}</h3>
+                                                {post.frontmatter.description && (
+                                                    <p class="muted post-desc">{post.frontmatter.description}</p>
+                                                )}
+                                            </div>
+                                        </a>
+                                    );
+                                })}
 							</div>
 							<p class="empty-note" id="empty-note" hidden>
 								По этой теме пока нет текстов.
@@ -116,31 +112,88 @@ const formatDate = (date?: string) =>
 </Layout>
 
 <script>
+document.addEventListener('astro:page-load', () => {
+
 	const chips = document.querySelectorAll<HTMLButtonElement>('.chip');
 	const cards = document.querySelectorAll<HTMLElement>('.post-card');
 	const emptyNote = document.getElementById('empty-note');
+    
+    const grid = document.getElementById('post-grid');
+    const viewBtns = document.querySelectorAll<HTMLButtonElement>('.view-btn');
+
+    // Логика фильтрации
+    function setTag(tag: string) {
+        chips.forEach((c) => {
+			const active = c.dataset.tag === tag;
+			c.classList.toggle('is-active', active);
+			c.setAttribute('aria-pressed', String(active));
+		});
+		let shown = 0;
+		cards.forEach((card) => {
+			const cardTags = (card.dataset.tags ?? '').split('|').filter(Boolean);
+			const match = tag === '*' || cardTags.includes(tag);
+			card.hidden = !match;
+			if (match) shown++;
+		});
+		if (emptyNote) emptyNote.hidden = shown > 0;
+    }
 
 	chips.forEach((chip) => {
 		chip.addEventListener('click', () => {
 			const tag = chip.dataset.tag ?? '*';
-
-			chips.forEach((c) => {
-				const active = c === chip;
-				c.classList.toggle('is-active', active);
-				c.setAttribute('aria-pressed', String(active));
-			});
-
-			let shown = 0;
-			cards.forEach((card) => {
-				const cardTags = (card.dataset.tags ?? '').split('|').filter(Boolean);
-				const match = tag === '*' || cardTags.includes(tag);
-				card.hidden = !match;
-				if (match) shown++;
-			});
-
-			if (emptyNote) emptyNote.hidden = shown > 0;
+            setTag(tag);
+            
+            // Обновляем URL без перезагрузки страницы
+            const url = new URL(window.location.href);
+            if (tag === '*') {
+                url.searchParams.delete('tag');
+            } else {
+                url.searchParams.set('tag', tag);
+            }
+            window.history.pushState({}, '', url);
 		});
 	});
+
+    // Читаем query параметр при загрузке (если пришли по ссылке с тегом)
+    const params = new URLSearchParams(window.location.search);
+    const initialTag = params.get('tag');
+    if (initialTag) {
+        const chipExists = Array.from(chips).some(c => c.dataset.tag === initialTag);
+        if (chipExists) {
+            setTag(initialTag);
+        }
+    }
+
+    // Логика переключения вида (Сетка / Список)
+    function setView(view: string) {
+        viewBtns.forEach(btn => {
+            btn.classList.toggle('is-active', btn.dataset.view === view);
+        });
+        if (grid) {
+            if (view === 'list') {
+                grid.classList.remove('grid-auto');
+                grid.classList.add('list-view');
+            } else {
+                grid.classList.add('grid-auto');
+                grid.classList.remove('list-view');
+            }
+        }
+        localStorage.setItem('texts-view', view);
+    }
+
+    viewBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            setView(btn.dataset.view ?? 'grid');
+        });
+    });
+
+    // Восстанавливаем сохраненный вид
+    const savedView = localStorage.getItem('texts-view');
+    if (savedView) {
+        setView(savedView);
+    }
+
+});
 </script>
 
 <style>
@@ -149,13 +202,11 @@ const formatDate = (date?: string) =>
 		border-bottom: 1px solid var(--line);
 		padding: 1.1rem 0;
 	}
-
 	.tag-filter {
 		display: flex;
 		gap: 0.5rem;
 		flex-wrap: wrap;
 	}
-
 	.chip {
 		display: inline-flex;
 		align-items: center;
@@ -173,42 +224,113 @@ const formatDate = (date?: string) =>
 			border-color 0.2s ease,
 			background 0.2s ease;
 	}
-
 	.chip:hover {
 		color: var(--accent);
 		border-color: var(--accent);
 	}
-
 	.chip.is-active {
 		background: var(--accent);
 		border-color: var(--accent);
 		color: var(--on-accent);
 	}
-
 	.chip-count {
 		font-size: 0.76rem;
 		opacity: 0.65;
 		font-variant-numeric: tabular-nums;
 	}
-
-	.post-date {
-		font-size: 0.78rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-		margin: 0 0 0.5rem;
-	}
-
-	.post-tags {
-		margin: 0.9rem 0 0.4rem;
-	}
+    
+    .view-toggles {
+        display: flex;
+        gap: 0.4rem;
+    }
+    .view-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink-soft);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .view-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+    }
+    .view-btn.is-active {
+        background: var(--accent-soft);
+        color: var(--accent-deep);
+        border-color: var(--accent-soft);
+    }
 
 	.post-card[hidden] {
-		display: none;
+		display: none !important;
 	}
-
 	.empty-note {
 		color: var(--ink-soft);
 		margin: 0;
 	}
+    
+    /* Стили для карточек в сетке */
+    .post-title {
+        font-size: 1.6rem; 
+        margin-top: 1rem; 
+        margin-bottom: 0.5rem; 
+        line-height: 1.2;
+    }
+    .post-desc {
+        margin-bottom: 0;
+    }
+    
+    /* Стили для режима "Список" */
+    #post-grid.list-view {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    #post-grid.list-view .post-card {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        padding: 1.5rem;
+        gap: 2rem;
+        background: var(--card);
+    }
+    #post-grid.list-view .post-card .card-cover {
+        margin: -1.5rem 0 -1.5rem -1.5rem !important;
+        width: 280px !important;
+        min-height: 200px;
+        height: auto;
+        border-radius: var(--radius) 0 0 var(--radius) !important;
+        flex-shrink: 0;
+    }
+    #post-grid.list-view .post-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    #post-grid.list-view .post-title {
+        margin-top: 0;
+        font-size: 1.8rem;
+    }
+    
+    @media (max-width: 650px) {
+        #post-grid.list-view .post-card {
+            flex-direction: column;
+            padding: 1.25rem;
+        }
+        #post-grid.list-view .post-card .card-cover {
+            margin: -1.25rem -1.25rem 1rem !important;
+            width: auto !important;
+            height: 180px;
+            min-height: auto;
+            border-radius: var(--radius) var(--radius) 0 0 !important;
+        }
+        .view-toggles {
+            display: none; /* Прячем на мобилках переключатель вида */
+        }
+    }
 </style>
